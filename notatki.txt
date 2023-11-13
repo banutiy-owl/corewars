@@ -1,0 +1,13 @@
+każdy gracz dostaje jeden cykl zegara żeby zagrać jedną instrukcję
+podobne do gra życia
+plansza nie zawija, jest wektor a nie macierz - pamięć komputera
+kiedy dojdzie do instrukcji dat - kończymy
+
+wylosujemy miejsce w pamięci dla programu - rozgrywka
+graczy mają konto, przechowuje poprzednie gry i programy
+
+interpretator - kolekcja obiektów - jeden obiekt, jedna instrukcja - lista
+
+flex, lex - pisanie kompilatora, przyjmuje kod źródłowy jako plik tekstowy i zamienia to na drzewo, po którym można to wykonać
+
+może wykorzystać istniejący silnik
