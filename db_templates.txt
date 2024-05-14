@@ -1,0 +1,51 @@
+{
+	"users": {
+		user_id: {
+			"email": email,
+			"password": password,
+			"name": name,
+			"won": won,
+			"lost": lost
+		}
+	}
+}
+
+
+{
+	"worriors": {
+		worrior_id: {
+			"user_id": user_id,
+			"name": name,
+			"code": code,
+			"won": won,
+			"lost": lost,
+			"busy": busy
+		}
+		
+	}
+}
+
+
+{
+	"games": {
+		game_id: {
+			"1_warrior_id": 1_warrior_id,
+			"2_warrior_id": 2_warrior_id	
+		}
+	}
+}
+
+
+{
+	"rounds": {
+		round_id: {
+			"round_number": round_number,
+			"game_id": game_id,
+			"cycles": cycles,
+			"warr_1_lives": warr_1_lives,
+			"warr_1_wins": warr_1_wins,
+			"warr_2_lives": warr_2_lives,
+			"warr_2_wins": warr_2_wins
+		}
+	}
+}
