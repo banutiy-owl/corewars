@@ -29,8 +29,8 @@
 {
 	"games": {
 		game_id: {
-			"1_warrior_id": 1_warrior_id,
-			"2_warrior_id": 2_warrior_id	
+			"warrior_1_id": warrior_1_id,
+			"warrior_2_id": warrior_2_id	
 		}
 	}
 }

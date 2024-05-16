@@ -3,19 +3,17 @@ from firebase_admin import credentials
 from firebase_admin import db
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
 import secrets
 from collections import deque
 from passlib.hash import pbkdf2_sha256
-import sqlite3
 import os
 import time
 import zxcvbn
 import re
-from base64 import b64encode
-from io import BytesIO
+from warrior import Warrior
+import pandas as pd
+
+
 
 cred = credentials.Certificate("corewars-48cd2-firebase-adminsdk-tyekb-3eddbce5b0.json")
 databaseURL = 'https://corewars-48cd2-default-rtdb.europe-west1.firebasedatabase.app/'
@@ -211,6 +209,62 @@ def hello():
         return render_template("hello.html", name=name)
 
 
-if __name__ == "__main__":
+@login_required
+def getWarriorsList():
+    warriors_ref = ref.child('warriors')
+    query = warriors_ref.order_by_child('user_id').equal_to(current_user.id)
+    results = query.get()
+    warriors_list = []
+    if results:
+        warriors_id = list(results.keys())
+        for warrior_id in warriors_id:
+            warrior_data = results[warrior_id]
+            data = [warrior_id, warrior_data]
+            warriors_list.append(data)
 
+        df = pd.DataFrame(warriors_list,
+                  columns=['warrior_id', 'name', 'won', 'lost','busy'])
+ 
+
+
+@login_required
+def saveWorrior(worrior):
+    worrior.saveToDB(ref)
+
+
+def getWorrior(warrior_id):
+    warrior_data = ref.child('warriors').child(warrior_id)
+    warrior = Warrior(warrior_data["user_id"],warrior_data["name"],warrior_data["code"],
+                      warrior_data["won"],warrior_data["lost"],warrior_data["busy"])
+    return warrior
+
+
+@login_required
+def saveGame(warrior_1_id,warrior_2_id,rounds):
+    worrior_data = {
+        "warrior_1_id": warrior_1_id,
+		"warrior_2_id": warrior_2_id
+	}
+    new_game = ref.child('worriors').push(worrior_data)
+    game_id = new_game.key
+    for round in rounds:
+        saveRound(round["number"],game_id,round["cycles"],round["w1l"],round["w1w"],round["w2l"],round["w2w"])
+    # TODO zapisywanie gry do pliku, co mam być w pliku?
+
+
+@login_required
+def saveRound(round_number,game_id,cycles,warr_1_lives,warr_1_wins,warr_2_lives,warr_2_wins):
+    round_data = {
+		"round_number": round_number,
+		"game_id": game_id,
+		"cycles": cycles,
+		"warr_1_lives": warr_1_lives,
+		"warr_1_wins": warr_1_wins,
+		"warr_2_lives": warr_2_lives,
+		"warr_2_wins": warr_2_wins
+	}
+    ref.child('rounds').push(round_data)
+
+
+if __name__ == "__main__":
     app.run(debug=True)
