@@ -1,6 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+from firebase_admin import storage
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import secrets
@@ -17,12 +18,14 @@ import pandas as pd
 
 cred = credentials.Certificate("corewars-48cd2-firebase-adminsdk-tyekb-3eddbce5b0.json")
 databaseURL = 'https://corewars-48cd2-default-rtdb.europe-west1.firebasedatabase.app/'
+storageBucket = 'gs://corewars-48cd2.appspot.com/games_files/'
 firebase_admin.initialize_app(cred,{
-	'databaseURL':databaseURL
+	'databaseURL': databaseURL,
+    'storageBucket': storageBucket
 	})
 
 ref = db.reference("/")
-
+bucket = storage.bucket()
 
 app = Flask(__name__)
 
@@ -208,6 +211,41 @@ def hello():
 
         return render_template("hello.html", name=name)
 
+# ----------- WARRIORS ------------
+@login_required
+def addNewWarrior(name,code):
+    warrior = Warrior(name)
+    warrior_data = {
+        "user_id": current_user.id,
+		"name": name,
+		"won": 0,
+		"lost": 0,
+        "busy": False
+	}
+    new_warrior = ref.child('warriors').push(warrior_data)
+    warrior_id = new_warrior.key
+    destination = "/worriors/"
+    filename = warrior_id
+    destination = destination + filename + '.txt'
+
+    local_file_path = filename + ".txt"
+    with open(local_file_path, 'w') as file:
+        file.write(code)
+
+    blob = bucket.blob(destination)
+    blob.upload_from_filename(local_file_path)
+
+    return warrior
+
+
+@login_required
+def deleteWarrior(warrior_id):
+    filepath = "/worriors/" + warrior_id + ".txt"
+    blob = bucket.blob(filepath)
+    blob.delete()
+    user_ref = ref.child('warriors').child(warrior_id)
+    user_ref.delete()
+
 
 @login_required
 def getWarriorsList():
@@ -222,17 +260,19 @@ def getWarriorsList():
             data = [warrior_id, warrior_data]
             warriors_list.append(data)
 
-        df = pd.DataFrame(warriors_list,
+    df = pd.DataFrame(warriors_list,
                   columns=['warrior_id', 'name', 'won', 'lost','busy'])
+    
+    return df
  
+
+@login_required
+def saveWorrior(warrior):
+    warrior.saveToDB(ref)
 
 
 @login_required
-def saveWorrior(worrior):
-    worrior.saveToDB(ref)
-
-
-def getWorrior(warrior_id):
+def getWarrior(warrior_id):
     warrior_data = ref.child('warriors').child(warrior_id)
     warrior = Warrior(warrior_data["user_id"],warrior_data["name"],warrior_data["code"],
                       warrior_data["won"],warrior_data["lost"],warrior_data["busy"])
