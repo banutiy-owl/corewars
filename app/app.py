@@ -18,7 +18,7 @@ import pandas as pd
 
 cred = credentials.Certificate("corewars-48cd2-firebase-adminsdk-tyekb-3eddbce5b0.json")
 databaseURL = 'https://corewars-48cd2-default-rtdb.europe-west1.firebasedatabase.app/'
-storageBucket = 'gs://corewars-48cd2.appspot.com/games_files/'
+storageBucket = 'gs://corewars-48cd2.appspot.com/games_files'
 firebase_admin.initialize_app(cred,{
 	'databaseURL': databaseURL,
     'storageBucket': storageBucket
@@ -31,11 +31,18 @@ app = Flask(__name__)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 app.secret_key = "9D9639B4D842CBAB1C972D8EDA2D123E3242D9ABEF61F3EB55B4CC8AAD"
 
 class User(UserMixin):
-    pass
+    def __init__(self, id, email, name, password, won, lost):
+        self.id = id
+        self.email = email
+        self.name = name
+        self.password = password
+        self.won = won
+        self.lost = lost
 
 
 @app.route('/check_password_strength', methods=['POST'])
@@ -48,7 +55,7 @@ def check_password_strength_route():
         return jsonify({'error': str(e)}), 400
 
 
-def password_condictions(password):
+def password_conditions(password):
     length_condition = len(password) >= 8
     uppercase_condition = bool(re.search(r'[A-Z]', password))
     lowercase_condition = bool(re.search(r'[a-z]', password))
@@ -61,7 +68,7 @@ def password_condictions(password):
 
 
 def calculate_password_strength(password):
-    conditions = password_condictions(password)
+    conditions = password_conditions(password)
     return int(sum(conditions) / len(conditions) * 100), conditions
 
 
@@ -126,7 +133,7 @@ def register():
 					"lost": 0
 				}
                 ref.child('users').push(user_data)
-                return None
+                return redirect("/")
         else:
             error = 'Passwords do not match'
             return render_template("register.html", error=error)
@@ -138,32 +145,45 @@ def random():
 
 
 @login_manager.user_loader
-def user_loader(email):
-    if email is None:
+def user_loader(login):
+    if not login:
         return None
-
     users_ref = ref.child('users')
-    query = users_ref.order_by_child('email').equal_to(email).limit_to_first(1)
-    results = query.get()
+    query = users_ref.order_by_child('email').equal_to(login).get()
+    results = list(query.values())
 
     if results:
-        user_id = list(results.keys())[0]
-        user_data = results[user_id]
-
-    user = User()
-    user.id = user_id
-    user.password = user_data["password"]
-    user.name = user_data["name"]
-    user.won = user_data["won"]
-    user.lost = user_data["lost"]
-    return user
+            user_data = results[0]
+            user_id = list(query.keys())[0]
+            user_name = user_data.get('name')
+            user_email = user_data.get('email')
+            user_password = user_data.get('password')
+            user_won = user_data.get('won')
+            user_lost = user_data.get('lost')
+            user = User(user_id, user_email, user_name, user_password, user_won, user_lost)
+            return user
+    return None
 
 
 @login_manager.request_loader
 def request_loader(request):
-    email = request.form.get('email')
-    user = user_loader(email)
-    return user
+    login = request.form.get('login')
+    if login:
+        users_ref = ref.child('users')
+        query = users_ref.order_by_child('email').equal_to(login).get()
+        results = list(query.values())
+
+        if results:
+            user_data = results[0]
+            user_id = list(query.keys())[0]
+            user_name = user_data.get('name')
+            user_email = user_data.get('email')
+            user_password = user_data.get('password')
+            user_won = user_data.get('won')
+            user_lost = user_data.get('lost')
+            user = User(user_id, user_email, user_name, user_password, user_won, user_lost)
+            return user
+    return None
 
 
 def verify_password(provided_password, stored_password):
@@ -178,10 +198,10 @@ def login():
     if request.method == "GET":
         return render_template("index.html")
     if request.method == "POST":
-        username = request.form.get("email")
+        login = request.form.get("login")
         password = request.form.get("password")
 
-        user = user_loader(username)
+        user = user_loader(login)
 
         if user is None:
             error = "Incorrect login details"
@@ -189,6 +209,7 @@ def login():
             return render_template("index.html", error=error)
 
         if verify_password(password, user.password):
+            print("tak")
             login_user(user)
             return redirect(url_for('hello'))
 
