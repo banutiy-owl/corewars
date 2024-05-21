@@ -86,7 +86,7 @@ def register():
         return render_template('register.html')
     elif request.method == 'POST':
         email = request.form["email"]
-        name = request.form["name"]
+        username = request.form["username"]
         password = request.form["password"]
         confirm_password = request.form["confirm_password"]
         if password == confirm_password:
@@ -120,20 +120,27 @@ def register():
             results = query.get()
 
             if results:
+                error = 'The email was already registered'
+                return render_template("register.html", error=error)
+            
+            query = users_ref.order_by_child('username').equal_to(username).limit_to_first(1)
+            results = query.get()
+
+            if results:
                 error = 'The username was already taken'
                 return render_template("register.html", error=error)
-            else:
-                salt = generate_salt()
-                hashed_password = hash_password(password, salt)
-                user_data = {
-					"email": email,
-					"password": hashed_password,
-					"name": name,
-					"won": 0,
-					"lost": 0
-				}
-                ref.child('users').push(user_data)
-                return redirect("/")
+
+            salt = generate_salt()
+            hashed_password = hash_password(password, salt)
+            user_data = {
+				"email": email,
+				"password": hashed_password,
+				"username": username,
+				"won": 0,
+				"lost": 0
+			}
+            ref.child('users').push(user_data)
+            return redirect("/")
         else:
             error = 'Passwords do not match'
             return render_template("register.html", error=error)
@@ -152,17 +159,21 @@ def user_loader(login):
     query = users_ref.order_by_child('email').equal_to(login).get()
     results = list(query.values())
 
-    if results:
-            user_data = results[0]
-            user_id = list(query.keys())[0]
-            user_name = user_data.get('name')
-            user_email = user_data.get('email')
-            user_password = user_data.get('password')
-            user_won = user_data.get('won')
-            user_lost = user_data.get('lost')
-            user = User(user_id, user_email, user_name, user_password, user_won, user_lost)
-            return user
-    return None
+    if not results:
+        query = users_ref.order_by_child('username').equal_to(login).get()
+        results = list(query.values())
+        if not results:
+            return None
+            
+    user_data = results[0]
+    user_id = list(query.keys())[0]
+    user_name = user_data.get('name')
+    user_email = user_data.get('email')
+    user_password = user_data.get('password')
+    user_won = user_data.get('won')
+    user_lost = user_data.get('lost')
+    user = User(user_id, user_email, user_name, user_password, user_won, user_lost)
+    return user
 
 
 @login_manager.request_loader
@@ -173,16 +184,21 @@ def request_loader(request):
         query = users_ref.order_by_child('email').equal_to(login).get()
         results = list(query.values())
 
-        if results:
-            user_data = results[0]
-            user_id = list(query.keys())[0]
-            user_name = user_data.get('name')
-            user_email = user_data.get('email')
-            user_password = user_data.get('password')
-            user_won = user_data.get('won')
-            user_lost = user_data.get('lost')
-            user = User(user_id, user_email, user_name, user_password, user_won, user_lost)
-            return user
+        if not results:
+            query = users_ref.order_by_child('username').equal_to(login).get()
+            results = list(query.values())
+            if not results:
+                return None
+                
+        user_data = results[0]
+        user_id = list(query.keys())[0]
+        user_name = user_data.get('name')
+        user_email = user_data.get('email')
+        user_password = user_data.get('password')
+        user_won = user_data.get('won')
+        user_lost = user_data.get('lost')
+        user = User(user_id, user_email, user_name, user_password, user_won, user_lost)
+        return user
     return None
 
 
@@ -271,15 +287,23 @@ def deleteWarrior(warrior_id):
 @login_required
 def getWarriorsList():
     warriors_ref = ref.child('warriors')
-    query = warriors_ref.order_by_child('user_id').equal_to(current_user.id)
-    results = query.get()
+    query = warriors_ref.order_by_child('user_id').equal_to(current_user.id).get()
+    results = list(query.values())
     warriors_list = []
+
     if results:
-        warriors_id = list(results.keys())
+        warriors_id = list(query.keys())
+        i = 0
+
         for warrior_id in warriors_id:
-            warrior_data = results[warrior_id]
-            data = [warrior_id, warrior_data]
+            warrior_data = results[i]
+            name = warrior_data.get('name')
+            won = warrior_data.get('won')
+            lost = warrior_data.get('lost')
+            busy = warrior_data.get('busy')
+            data = [warrior_id, name, won, lost, busy]
             warriors_list.append(data)
+            i += 1
 
     df = pd.DataFrame(warriors_list,
                   columns=['warrior_id', 'name', 'won', 'lost','busy'])
@@ -294,9 +318,10 @@ def saveWorrior(warrior):
 
 @login_required
 def getWarrior(warrior_id):
-    warrior_data = ref.child('warriors').child(warrior_id)
-    warrior = Warrior(warrior_data["user_id"],warrior_data["name"],warrior_data["code"],
-                      warrior_data["won"],warrior_data["lost"],warrior_data["busy"])
+    warrior_ref = ref.child('warriors')
+    warrior_data = warrior_ref.child(warrior_id)
+    warrior = Warrior(warrior_data.get('user_id'),warrior_data.get('name'),warrior_data.get('code'),
+                      warrior_data.get('won'),warrior_data.get('lost'),warrior_data.get('busy'))
     return warrior
 
 
@@ -310,7 +335,7 @@ def saveGame(warrior_1_id,warrior_2_id,rounds):
     game_id = new_game.key
     for round in rounds:
         saveRound(round["number"],game_id,round["cycles"],round["w1l"],round["w1w"],round["w2l"],round["w2w"])
-    # TODO zapisywanie gry do pliku, co mam być w pliku?
+    # TODO zapisywanie gry do pliku, co ma być w pliku?
 
 
 @login_required
