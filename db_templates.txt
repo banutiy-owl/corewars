@@ -3,7 +3,7 @@
 		user_id: {
 			"email": email,
 			"password": password,
-			"name": name,
+			"username": username,
 			"won": won,
 			"lost": lost
 		}
@@ -16,7 +16,6 @@
 		worrior_id: {
 			"user_id": user_id,
 			"name": name,
-			"code": code,
 			"won": won,
 			"lost": lost,
 			"busy": busy
