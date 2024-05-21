@@ -36,10 +36,10 @@ login_manager.login_view = 'login'
 app.secret_key = "9D9639B4D842CBAB1C972D8EDA2D123E3242D9ABEF61F3EB55B4CC8AAD"
 
 class User(UserMixin):
-    def __init__(self, id, email, name, password, won, lost):
+    def __init__(self, id, email, username, password, won, lost):
         self.id = id
         self.email = email
-        self.name = name
+        self.username = username
         self.password = password
         self.won = won
         self.lost = lost
@@ -167,12 +167,12 @@ def user_loader(login):
             
     user_data = results[0]
     user_id = list(query.keys())[0]
-    user_name = user_data.get('name')
+    user_username = user_data.get('username')
     user_email = user_data.get('email')
     user_password = user_data.get('password')
     user_won = user_data.get('won')
     user_lost = user_data.get('lost')
-    user = User(user_id, user_email, user_name, user_password, user_won, user_lost)
+    user = User(user_id, user_email, user_username, user_password, user_won, user_lost)
     return user
 
 
@@ -192,12 +192,12 @@ def request_loader(request):
                 
         user_data = results[0]
         user_id = list(query.keys())[0]
-        user_name = user_data.get('name')
+        user_username = user_data.get('username')
         user_email = user_data.get('email')
         user_password = user_data.get('password')
         user_won = user_data.get('won')
         user_lost = user_data.get('lost')
-        user = User(user_id, user_email, user_name, user_password, user_won, user_lost)
+        user = User(user_id, user_email, user_username, user_password, user_won, user_lost)
         return user
     return None
 
@@ -244,9 +244,9 @@ def logout():
 @login_required
 def hello():
     if request.method == 'GET':
-        name = current_user.name
+        username = current_user.username
 
-        return render_template("hello.html", name=name)
+        return render_template("hello.html", username=username)
 
 # ----------- WARRIORS ------------
 @login_required
