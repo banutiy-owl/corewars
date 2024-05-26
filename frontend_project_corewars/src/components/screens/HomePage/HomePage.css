@@ -1,0 +1,59 @@
+
+.history-tab {
+  display: flex;
+  justify-content: flex-end; /* Align items to the end (right side) of the container */
+  align-items: center; /* Center items vertically */
+  width: 100vw;
+  height: 80px; /* Example background color */
+}
+
+.history-tab img {
+  margin-right: 10px;
+}
+
+.upload-button {
+  margin-right: 10px; 
+}
+
+
+
+.info-panel {
+  width: 100vw;
+  height: 100px;
+  background-color: #444141;
+  padding-top: 0.5vh;
+}
+
+.upload {
+  margin:10px;
+}
+
+
+.text-field {
+    display: inline-block;
+    vertical-align: top; 
+    height: 90vh; 
+  }
+  
+  .my-code-field {
+    background-color: #373737; 
+    width: 25%;
+  }
+  
+  .comp-code-field {
+    background-color: #808080;
+    width: 25%; 
+  }
+  
+  .tasks-field {
+    background-color: #3e3e3e; 
+    width: 10%;
+  }
+  
+  .text-field.my-code-field {
+    padding: 15px;
+    color: #f8f9fa; 
+    font-size: 15px;
+    white-space: pre-wrap; 
+  }
+  

@@ -1,0 +1,21 @@
+section .data
+    num1    dd  10        ; First number (integer)
+    num2    dd  20        ; Second number (integer)
+
+section .text
+    global _start
+
+_start:
+    ; Load the first number into eax
+    mov     eax, [num1]
+
+    ; Add the second number to eax
+    add     eax, [num2]
+
+    ; Store the result back into num1
+    mov     [num1], eax
+
+    ; Exit the program
+    mov     eax, 1        ; syscall number for exit
+    xor     ebx, ebx      ; exit code 0
+    int     0x80          ; call kernel
