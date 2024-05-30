@@ -5,6 +5,8 @@ import LoginPage from "./components/screens/auth/LoginPage/LoginPage";
 import WelcomePage from "./components/screens/WelcomePage/WelcomePage";
 import HomePage from "./components/screens/HomePage/HomePage";
 import WarriorsPage from "./components/screens/ListWarriorsPage/WarriorsPage";
+import AddEditWarriorPage from "./components/screens/AddEditWarriorPage/AddEditWarriorPage";
+
 
 function App() {
   return (
@@ -15,6 +17,7 @@ function App() {
         <Route path="/register" element={<SignUpPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/warriors" element={<WarriorsPage />} />
+        <Route path="/warrior" element={<AddEditWarriorPage />} />
       </Routes>
     </Router>
   );

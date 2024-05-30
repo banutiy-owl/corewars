@@ -1,36 +1,34 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import WarriorList from "./WarriorList";
-import NewWarrior from "./NewWarrior";
-import { addWarrior, editWarrior, deleteWarrior } from "./warriorService";
+
 import "./styles.css";
 
 const WarriorsPage = () => {
   const [warriors, setWarriors] = useState([
     { id: 1, name: "Warrior 1", busy: true, won: 2, lost: 1 },
     { id: 2, name: "Warrior 2", busy: false, won: 1, lost: 3 },
-    ]);
+  ]);
+  const navigate = useNavigate();
 
-  const handleAddWarrior = (name) => {
-    const updatedWarriors = addWarrior(warriors, name);
-    setWarriors(updatedWarriors);
+  const handleAddWarriorClick = () => {
+    navigate("/warrior");
   };
 
-  const handleEditWarrior = (warrior) => {
-    const updatedWarriors = editWarrior(warriors, warrior);
-    setWarriors(updatedWarriors);
+  const handleEditWarrior = () => {
+    navigate("/warrior");
   };
 
-  const handleDeleteWarrior = (id) => {
-    const updatedWarriors = deleteWarrior(warriors, id);
-    setWarriors(updatedWarriors);
-  };
+  const handleDeleteWarrior = () => {};
 
   return (
     <div className="body">
       <Header />
       <h1 className="title">Warriors</h1>
-      <button className="add-warrior-btn">Add Warrior</button>
+      <button className="add-warrior-btn" onClick={handleAddWarriorClick}>
+        Add Warrior
+      </button>
       <WarriorList
         warriors={warriors}
         onEdit={handleEditWarrior}
