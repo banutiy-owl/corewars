@@ -104,7 +104,7 @@ class Warrior:
     "An encapsulation of a Redcode Warrior, with instructions and meta-data"
 
     def __init__(self, name='Unnamed', author='Anonymous', date=None,
-                 version=None, strategy=None, start=0):
+                 version=None, strategy=None, start=0, id = None):
         self.name = name
         self.author = author
         self.date = date
@@ -112,6 +112,7 @@ class Warrior:
         self.strategy = strategy
         self.start = start
         self.instructions = []
+        self.id = id
 
     def __iter__(self):
         return iter(self.instructions)
@@ -266,7 +267,7 @@ def parse(input, definitions={}):
             m = re.match(r'^;assert\s+(.+)$', line, re.I)
             if m:
                 if not eval(m.group(1), environment):
-                    raise AssertionError("Assertion failed: %s, line %d" % (line, n))
+                    raise ValueError("Assertion failed: %s, line %d.\nRemember that core always has a size of 8000. Change the code if it needs a different core size." % (line, n))
                 continue
 
             # ignore other comments
@@ -343,7 +344,10 @@ def parse(input, definitions={}):
 
     # evaluate start expression
     if isinstance(warrior.start, str):
-        warrior.start = eval(warrior.start, environment, labels)
+        try:
+            warrior.start = eval(warrior.start, environment, labels)
+        except NameError:
+            raise ValueError('Invalid label name was given as a start point. Check ORG or END expression.') from None     
 
     # second pass
     for n, instruction in enumerate(warrior.instructions):
@@ -354,8 +358,17 @@ def parse(input, definitions={}):
 
         # evaluate instruction fields using global environment and labels
         if isinstance(instruction.a_number, str):
-            instruction.a_number = eval(instruction.a_number, environment, relative_labels)
+            try:
+                instruction.a_number = eval(instruction.a_number, environment, relative_labels)
+            except NameError:
+                raise ValueError(f'Invalid refference name "{instruction.a_number}" in expression: {str(instruction)}') from None
+            
+
         if isinstance(instruction.b_number, str):
-            instruction.b_number = eval(instruction.b_number, environment, relative_labels)
+            try:
+                instruction.b_number = eval(instruction.b_number, environment, relative_labels)
+            except NameError:
+                raise ValueError(f'Invalid refference name "{instruction.b_number}" in expression: {str(instruction)}') from None
+
 
     return warrior

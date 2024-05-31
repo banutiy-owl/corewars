@@ -4,9 +4,10 @@
 from copy import copy
 import operator
 from random import randint
+import math
 
-from core import Core, DEFAULT_INITIAL_INSTRUCTION
-from redcode import *
+from .core import Core, DEFAULT_INITIAL_INSTRUCTION
+from .redcode import *
 
 __all__ = ['MARS', 'EVENT_EXECUTED', 'EVENT_I_WRITE', 'EVENT_I_READ',
            'EVENT_A_DEC', 'EVENT_A_INC', 'EVENT_B_DEC', 'EVENT_B_INC',
@@ -65,7 +66,7 @@ class MARS(object):
             warrior_position = (n * space)
 
             if randomize:
-                warrior_position += randint(0, max(0, space -
+                warrior_position += randint(0, max(0, math.floor(space) -
                                                    len(warrior) -
                                                    self.minimum_separation))
 
@@ -74,7 +75,7 @@ class MARS(object):
 
             # copy warrior's instructions to the core
             for i, instruction in enumerate(warrior.instructions):
-                self.core[warrior_position + i] = copy(instruction)
+                self.core[warrior_position + i] = (copy(instruction), copy(warrior.id))
                 self.core_event(warrior, warrior_position + i, EVENT_I_WRITE)
 
     def enqueue(self, warrior, address):
@@ -100,7 +101,7 @@ class MARS(object):
             if warrior.task_queue:
                 # The process counter is the next instruction-address in the
                 # warrior's task queue
-                pc = warrior.task_queue.pop(0)
+                pc = int(warrior.task_queue.pop(0))
 
                 # copy the current instruction to the instruction register
                 ir = copy(self.core[pc])
@@ -392,21 +393,18 @@ class MARS(object):
                     else:
                         raise ValueError("Invalid modifier: %d" % ir.modifier)
                 elif ir.opcode == SPL:
-                    self.enqueue(warrior, pc + rpa)
                     self.enqueue(warrior, pc + 1)
-                elif ir.opcode == CMP:
-                    do_comparison(operator.eq)
-                elif ir.opcode == SEQ:
+                    self.enqueue(warrior, pc + rpa)
+                elif ir.opcode == SLT:
+                    do_comparison(operator.lt)
+                elif ir.opcode == CMP or ir.opcode == SEQ:
                     do_comparison(operator.eq)
                 elif ir.opcode == SNE:
                     do_comparison(operator.ne)
-                elif ir.opcode == SLT:
-                    do_comparison(operator.lt)
                 elif ir.opcode == NOP:
                     self.enqueue(warrior, pc + 1)
                 else:
                     raise ValueError("Invalid opcode: %d" % ir.opcode)
-
 
 if __name__ == "__main__":
     import argparse

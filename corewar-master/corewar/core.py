@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from copy import copy
-from redcode import Instruction
+from corewar.redcode import Instruction
 
 __all__ = ['DEFAULT_INITIAL_INSTRUCTION', 'Core']
 
@@ -23,6 +23,7 @@ class Core:
         """Writes the same instruction thorough the entire core.
         """
         self.instructions = [instruction.core_binded(self) for i in range(self.size)]
+        self.owner = [0 for _ in range(self.size)]
 
     def trim_write(self, address):
         "Return the trimmed address to write, considering the write limit."
@@ -48,13 +49,25 @@ class Core:
         return result
 
     def __getitem__(self, address):
+        if isinstance(address, float):
+            return self.instructions[int(address % self.size)]
+        elif isinstance(address,slice):
+            start = address.start
+            stop = address.stop
+            if start > stop:
+                return self.instructions[start:] + self.instructions[:stop]
+            else:
+                return self.instructions[start:stop]
         return self.instructions[address % self.size]
 
-    def __getitem__(self, index):
-        return self.instructions[index]
 
-    def __setitem__(self, address, instruction):
-        self.instructions[address % self.size] = instruction
+    def __setitem__(self, address, value):
+        if isinstance(value, tuple) and len(value) == 2:
+            instruction, owner = value
+            self.instructions[int(address % self.size)] = instruction
+            self.owner[int(address % self.size)] = owner
+        else:
+            self.instructions[int(address % self.size)] = value
 
     def __iter__(self):
         return iter(self.instructions)
@@ -64,3 +77,11 @@ class Core:
 
     def __repr__(self):
         return "<Core size=%d>" % self.size
+    
+    def get_owner(self, address):
+        """Return the owner of the cell at the given address."""
+        return self.owner[address % self.size]
+    
+    def reset_owner(self):
+        """Reset the ownership array."""
+        self.owner = [0 for _ in range(self.size)]
