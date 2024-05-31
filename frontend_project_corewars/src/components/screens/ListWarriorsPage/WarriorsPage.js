@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import WarriorList from "./WarriorList";
 
-import "./styles.css";
+import "./styles.list.css";
 
 const WarriorsPage = () => {
   const [warriors, setWarriors] = useState([
@@ -19,6 +19,7 @@ const WarriorsPage = () => {
   const handleEditWarrior = () => {
     navigate("/warrior");
   };
+
 
   const handleDeleteWarrior = () => {};
 

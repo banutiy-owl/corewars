@@ -1,11 +1,15 @@
 .container {
+    font-family: 'Courier New', Courier, monospace;
     display: flex;
     flex-direction: column;
     margin: auto;
-    margin-top: 110px;
-    width: 600px;
-    background: #2d282e;
-    padding-bottom: 30px;
+    margin-top: 50px; /* Reduced margin-top for consistency */
+    width: 50%; /* Adjusted width to match warrior blocks */
+    max-width: 600px; /* Set max-width */
+    background-color: #1a1a1a; /* Match background color with warrior blocks */
+    padding: 25px; /* Adjusted padding for consistency */
+    border: 1px solid #444; /* Add border to container */
+    border-radius: 5px; 
 }
 
 .header {
@@ -31,29 +35,31 @@
 }
 
 .inputs {
-    margin-top:55px;
     display: flex;
     flex-direction: column;
     gap: 25px;
+    margin-top: 40px;
+    width: 100%;
 }
+
 
 .input {
     display: flex;
     align-items: center;
-    margin: auto;
-    width: 410px;
-    height: 70px;
-    border: 3px #4e484f solid;
-    border-radius: 25px;
+    padding: 10px;
+    border: 3px solid #4e484f;
+    border-radius: 5px;
+    margin: 0 auto;
+    width: 70%;
+    background-color: #2d282e;/* Match background color */
 }
 
 .input img {
-    margin: 0px 30px;
+    margin: 0 15px; /* Adjust margin for consistency */
 }
 
 .input input {
-    height: 30px;
-    width: 270px;
+    flex: 1;
     background: transparent;
     border: none;
     outline: none;
@@ -71,17 +77,22 @@
 
 .input.focused-password {
     border: 3px #603cd2 solid;
+
+}
+
+.input.focused-password-repeat {
+    border: 3px #603cd2 solid;
 }
 
 .input.error input {
     border-color: red;
   }
   
-
-.have-account{
-    padding-left: 30%;
+  .have-account {
+    text-align: center; /* Center the text */
     color: #e4e4e4;
     font-size: 19px;
+    margin: 15px auto; /* Add margin for spacing */
 }
 
 .link{
@@ -104,15 +115,16 @@
     margin: 40px auto;
 }
 
-.button{
+
+.button {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 220px;
     height: 62px;
     color: white;
-    background: linear-gradient(135deg, #4a46d8 20%, #7632cd);
-    border-radius: 50px;
+    background: #7632cd;
+    border-radius: 10px;
     font-size: 19px;
     font-weight: 700;
     cursor: pointer;
