@@ -1,5 +1,5 @@
 import { React, useState } from "react";
-import "../styles.css";
+import "../this.auth.css";
 import {
   handleSignUp,
   handleUsernameChange,
@@ -47,18 +47,21 @@ const SignUpPage = () => {
     setIsFocusedUsername(false);
     setIsFocusedEmail(true);
     setIsFocusedPassword(false);
+    setIsFocusedPasswordRepeat(false);
   };
 
   const handleFocusPassword = () => {
     setIsFocusedUsername(false);
     setIsFocusedEmail(false);
     setIsFocusedPassword(true);
+    setIsFocusedPasswordRepeat(false);
   };
 
   const handleFocusPasswordRepeat = () => {
     setIsFocusedUsername(false);
     setIsFocusedEmail(false);
-    setIsFocusedPassword(true);
+    setIsFocusedPassword(false);
+    setIsFocusedPasswordRepeat(true);
   };
 
   const togglePasswordVisibility = () => {

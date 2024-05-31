@@ -6,6 +6,7 @@ import WelcomePage from "./components/screens/WelcomePage/WelcomePage";
 import HomePage from "./components/screens/HomePage/HomePage";
 import WarriorsPage from "./components/screens/ListWarriorsPage/WarriorsPage";
 import AddEditWarriorPage from "./components/screens/AddEditWarriorPage/AddEditWarriorPage";
+import NewGamePage from "./components/screens/NewGamePage/NewGamePage";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/warriors" element={<WarriorsPage />} />
         <Route path="/warrior" element={<AddEditWarriorPage />} />
+        <Route path="/new-game" element={<NewGamePage />} />
       </Routes>
     </Router>
   );

@@ -8,8 +8,8 @@ const Header = () => {
     navigate("/home");
   };
 
-  const handleNewGame = () => {
-    navigate("/new-game");
+  const handleWarriorsClick = () => {
+    navigate("/warriors");
   };
 
   return (
@@ -20,8 +20,8 @@ const Header = () => {
         </button>
       </div>
       <div className="right">
-        <button className="header-btn" onClick={handleNewGame}>
-          New Game
+        <button className="header-btn" onClick={handleWarriorsClick}>
+          Warriors
         </button>
         <button className="header-btn">History</button>
       </div>
