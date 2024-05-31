@@ -8,7 +8,10 @@ const WelcomePage = () => {
     <div className="container">
       <div className="header">
         <div className="text">
-          Welcome to <br /> COREWARS
+          Welcome to
+        </div>
+        <div className="text">
+        COREWARS
         </div>
         <div className="underline"></div>
       </div>

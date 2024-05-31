@@ -1,0 +1,15 @@
+.show {
+    max-height:50px;
+}
+
+.win_warrior1, .win_warrior2{
+    padding: 10px;
+}
+
+.label1{
+    color: #c0c0ff;
+}
+
+.label2{
+    color: #fec1c1;
+}
