@@ -33,21 +33,17 @@ export const handleSignUp = (
 export const handleSignIn = (
   username,
   password,
-  passwordRepeat,
   setUsernameError,
   setPasswordError,
-  setPasswordRepeatError
 ) => {
   const usernameError = validateUsername(username);
   const passwordError = validatePassword(password);
-  const passwordRepeatError = validatePassword(password, passwordRepeat);
 
   setUsernameError(usernameError);
   setPasswordError(passwordError);
-  setPasswordRepeatError(passwordRepeatError);
-  setPasswordError(passwordRepeatError);
 
-  if (usernameError || passwordError || passwordRepeatError) {
+
+  if (usernameError || passwordError) {
     return;
   }
 };

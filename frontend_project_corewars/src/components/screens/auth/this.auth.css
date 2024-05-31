@@ -3,12 +3,12 @@
     display: flex;
     flex-direction: column;
     margin: auto;
-    margin-top: 50px; /* Reduced margin-top for consistency */
-    width: 50%; /* Adjusted width to match warrior blocks */
-    max-width: 600px; /* Set max-width */
-    background-color: #1a1a1a; /* Match background color with warrior blocks */
-    padding: 25px; /* Adjusted padding for consistency */
-    border: 1px solid #444; /* Add border to container */
+    margin-top: 50px; 
+    width: 50%; 
+    max-width: 600px; 
+    background-color: #1a1a1a; 
+    padding: 25px; 
+    border: 1px solid #444;
     border-radius: 5px; 
 }
 

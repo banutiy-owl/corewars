@@ -19,15 +19,25 @@ const NewGamePage = () => {
     setSelectedWarrior(selectedWarrior === id ? null : id);
   };
 
+    
+  const handleStartNewGame = () => {
+    navigate("/history");
+  };
+
+
   return (
     <div className="body">
       <Header />
       <h1 className="title">Choose your warrior</h1>
+      
       <WarriorsTickList
         warriors={warriors}
         selectedWarrior={selectedWarrior}
         onTick={handleTick}
       />
+      <button className="new-game-btn" onClick={handleStartNewGame}>
+        Go
+      </button>
     </div>
   );
 };

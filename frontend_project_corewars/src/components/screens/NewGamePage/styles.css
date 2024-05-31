@@ -32,3 +32,15 @@
     margin-left: 11px;
     margin-top: 6px;
   }
+
+  .new-game-btn{
+    font-size: 18px;
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #7a44cf;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }

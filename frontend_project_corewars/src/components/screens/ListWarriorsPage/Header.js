@@ -12,6 +12,10 @@ const Header = () => {
     navigate("/new-game");
   };
 
+  const handleHistory = () => {
+    navigate("/history");
+  };
+
   return (
     <header>
       <div className="left">
@@ -23,7 +27,7 @@ const Header = () => {
         <button className="header-btn" onClick={handleNewGame}>
           New Game
         </button>
-        <button className="header-btn">History</button>
+        <button className="header-btn" onClick={handleHistory}>History</button>
       </div>
     </header>
   );
