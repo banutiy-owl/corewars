@@ -27,7 +27,7 @@ const HistoryPage = () => {
   const navigate = useNavigate();
 
   const handleShowGame = () => {
-    navigate("/warrior");
+    navigate("/game-review");
   };
 
   return (

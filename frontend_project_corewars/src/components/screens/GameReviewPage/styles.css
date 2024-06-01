@@ -1,0 +1,125 @@
+/* styles.css */
+
+.game_container {
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 90%;
+    max-width: 1600px;
+    background-color: #1a1a1a;
+    padding: 25px;
+    border: 1px solid #444;
+    border-radius: 5px;
+  }
+  
+  .game {
+    display: flex;
+    width: 100%;
+    margin: auto;
+    background-color: #2d282e;
+    border: 1px solid #444;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .memo {
+    flex: 1.2; /* Adjusted to make memo wider */
+    padding: 20px;
+    background-color: #1a1a1a;
+    border-right: 1px solid #444;
+  }
+  
+  .warrior-tabs {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .tab-buttons {
+    display: flex;
+    margin-bottom: 10px;
+  }
+  
+  .tab-buttons button {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #444;
+    border: none;
+    color: #fafafa;
+    transition: background-color 0.3s;
+  }
+  
+  .tab-buttons button.active {
+    background-color: #603cd2;
+    font-weight: bold;
+  }
+  
+  .code-display {
+    flex: 1;
+    padding: 20px;
+    background-color: #2d282e;
+    color: #e4e4e4;
+    border: 1px solid #444;
+    overflow-y: auto;
+  }
+  
+  .grid-section {
+    flex: 1.8; /* Adjusted to make grid section wider */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .grid {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    border: 1px solid #444;
+    overflow: auto;
+    background-color: #1a1a1a;
+  }
+  
+  .grid-row {
+    display: flex;
+  }
+  
+  .grid-cell {
+    width: 7px; /* Adjusted cell size */
+    height: 7px; /* Adjusted cell size */
+    border: 1px solid #444;
+  }
+  
+  .round-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    color: #fafafa;
+  }
+  
+  .round-info p {
+    margin: 0 10px;
+  }
+  
+  .round-info button {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #444;
+    border: none;
+    color: #fafafa;
+    transition: background-color 0.3s;
+  }
+  
+  .round-info button:hover {
+    background-color: #603cd2;
+  }
+  
+  .winner-info {
+    text-align: center;
+    color: #fafafa;
+    margin-top: 10px;
+  }
+  

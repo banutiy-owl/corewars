@@ -8,7 +8,7 @@ import WarriorsPage from "./components/screens/ListWarriorsPage/WarriorsPage";
 import AddEditWarriorPage from "./components/screens/AddEditWarriorPage/AddEditWarriorPage";
 import NewGamePage from "./components/screens/NewGamePage/NewGamePage";
 import HistoryPage from "./components/screens/HistoryPage/HistoryPage";
-
+import GameReviewPage from "./components/screens/GameReviewPage/GameReviewPage";
 
 function App() {
   return (
@@ -22,6 +22,7 @@ function App() {
         <Route path="/warrior" element={<AddEditWarriorPage />} />
         <Route path="/new-game" element={<NewGamePage />} />
         <Route path="/history" element={<HistoryPage />} />
+        <Route path="/game-review" element={<GameReviewPage />} />
       </Routes>
     </Router>
   );

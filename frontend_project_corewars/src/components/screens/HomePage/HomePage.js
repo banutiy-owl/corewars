@@ -8,14 +8,14 @@ function HomePage() {
     <div className="body">
       <Header />
       <div className="header">
-        <div className="text">
+        <div className="user-text-welcome">
           Welcome User
           <div className="underline"></div>
         </div>
         
       </div>
       
-      <div className="description-text">
+      <div className="description-text-user">
         Core Wars is a programming game in which two or more programs run in a
         simulated computer with the goal of terminating every other program and
         surviving as long as possible.
