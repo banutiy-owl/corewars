@@ -27,7 +27,7 @@ MOV.i	$2,	$2
 JMP.b	$-1,	>-1
 """
 
-cycles, round_winner_id, wins, core_states, exceptions = game(123, dwarf, 321, bot, rounds=4)
+cycles, round_winner_id, wins, core_states, exceptions = game(123, dwarf, 321, bot)
 
 print(cycles)
 print(round_winner_id),
