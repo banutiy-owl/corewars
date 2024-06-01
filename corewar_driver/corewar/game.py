@@ -56,4 +56,12 @@ def game(warrior_1_id, warrior_1_code, warrior_2_id, warrior_2_code, coresize=No
                 round_winner_id[i] = -1
                 exceptions[i] = e + "This is a program error, please contact our technical support."
     core_states = "".join(core_states_l)
+    """cycles - lista cykli dla każdej rundy, 
+    round_winner_id - lista z id zwycięzcy każdej rundy
+        (0 jeżeli remis, 
+        -1 jeżely był error, wtedy tekst error jest pod odpowiednim indeksem w exceptions), 
+    wins - dict wygranych każdego wojownika,
+    core_states - (string) stany końcowe pól w formacie np. DAT, 123, 321;...
+        pierwsza liczba to owner, druga to modifier(warrior który ostatni zmienił komórkę)
+    exceptions - lista errorów, jęzeli zaszły"""
     return cycles, round_winner_id, wins, core_states, exceptions
