@@ -32,6 +32,8 @@ app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+login_manager.session_protection = "strong"
+
 
 app.secret_key = "9D9639B4D842CBAB1C972D8EDA2D123E3242D9ABEF61F3EB55B4CC8AAD"
 
@@ -43,6 +45,18 @@ class User(UserMixin):
         self.password = password
         self.won = won
         self.lost = lost
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
 
 
 @app.route('/check_password_strength', methods=['POST'])
@@ -152,21 +166,16 @@ def random():
 
 
 @login_manager.user_loader
-def user_loader(login):
-    if not login:
+def user_loader(user_id):
+    print(user_id)
+    if not user_id:
         return None
     users_ref = ref.child('users')
-    query = users_ref.order_by_child('email').equal_to(login).get()
-    results = list(query.values())
-
-    if not results:
-        query = users_ref.order_by_child('username').equal_to(login).get()
-        results = list(query.values())
-        if not results:
-            return None
-            
-    user_data = results[0]
-    user_id = list(query.keys())[0]
+    result = users_ref.child(user_id).get()
+    if not result:
+        return None
+    
+    user_data = result
     user_username = user_data.get('username')
     user_email = user_data.get('email')
     user_password = user_data.get('password')
@@ -176,48 +185,34 @@ def user_loader(login):
     return user
 
 
-@login_manager.request_loader
-def request_loader(request):
-    login = request.form.get('login')
-    if login:
-        users_ref = ref.child('users')
-        query = users_ref.order_by_child('email').equal_to(login).get()
-        results = list(query.values())
-
-        if not results:
-            query = users_ref.order_by_child('username').equal_to(login).get()
-            results = list(query.values())
-            if not results:
-                return None
-                
-        user_data = results[0]
-        user_id = list(query.keys())[0]
-        user_username = user_data.get('username')
-        user_email = user_data.get('email')
-        user_password = user_data.get('password')
-        user_won = user_data.get('won')
-        user_lost = user_data.get('lost')
-        user = User(user_id, user_email, user_username, user_password, user_won, user_lost)
-        return user
-    return None
-
-
 def verify_password(provided_password, stored_password):
     return pbkdf2_sha256.verify(provided_password, stored_password)
 
-
 recent_users = deque(maxlen=3)
 
-
-@app.route("/", methods=["GET","POST"])
+@app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
         return render_template("index.html")
+    
     if request.method == "POST":
         login = request.form.get("login")
         password = request.form.get("password")
-
-        user = user_loader(login)
+        print("tak1")
+        users_ref = ref.child('users')
+        query = users_ref.order_by_child('email').equal_to(login).get()
+        result = list(query.values())
+        print("tak2")
+        if not result:
+            query = users_ref.order_by_child('username').equal_to(login).get()
+            result = list(query.values())
+            if not result:
+                error = "Incorrect login details"
+                return render_template("index.html", error=error)
+        print("tak3")
+        user_id = list(query.keys())[0]
+        print(user_id)
+        user = user_loader(user_id)
 
         if user is None:
             error = "Incorrect login details"
@@ -225,9 +220,9 @@ def login():
             return render_template("index.html", error=error)
 
         if verify_password(password, user.password):
-            print("tak")
             login_user(user)
-            return redirect(url_for('hello'))
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('hello'))
 
         error = "Incorrect login details"
         time.sleep(random())
