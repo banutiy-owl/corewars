@@ -167,7 +167,6 @@ def random():
 
 @login_manager.user_loader
 def user_loader(user_id):
-    print(user_id)
     if not user_id:
         return None
     users_ref = ref.child('users')
@@ -198,20 +197,18 @@ def login():
     if request.method == "POST":
         login = request.form.get("login")
         password = request.form.get("password")
-        print("tak1")
         users_ref = ref.child('users')
         query = users_ref.order_by_child('email').equal_to(login).get()
         result = list(query.values())
-        print("tak2")
+
         if not result:
             query = users_ref.order_by_child('username').equal_to(login).get()
             result = list(query.values())
             if not result:
                 error = "Incorrect login details"
                 return render_template("index.html", error=error)
-        print("tak3")
+
         user_id = list(query.keys())[0]
-        print(user_id)
         user = user_loader(user_id)
 
         if user is None:
