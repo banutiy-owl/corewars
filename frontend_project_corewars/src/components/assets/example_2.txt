@@ -1,0 +1,36 @@
+section .data
+    num         dd  5       ; Number whose factorial is to be calculated
+    factorial   dd  1       ; Variable to store the factorial result
+
+section .text
+    global _start
+
+_start:
+    ; Load the number into ebx
+    mov     ebx, [num]
+
+    ; Initialize the loop counter
+    mov     ecx, ebx
+
+    ; Check if the number is zero or one
+    cmp     ebx, 0
+    je      end_loop
+    cmp     ebx, 1
+    je      end_loop
+
+calculate_factorial:
+    ; Multiply the current factorial by the loop counter
+    imul    dword [factorial], ecx
+
+    ; Decrement the loop counter
+    dec     ecx
+
+    ; Check if the loop counter is greater than 1
+    cmp     ecx, 1
+    jg      calculate_factorial
+
+end_loop:
+    ; Exit the program
+    mov     eax, 1          ; syscall number for exit
+    xor     ebx, ebx        ; exit code 0
+    int     0x80            ; call kernel

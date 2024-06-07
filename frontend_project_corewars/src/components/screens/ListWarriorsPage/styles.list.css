@@ -1,0 +1,161 @@
+.body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #1a1a1a;
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+    width: 50%;       /* Set the same width as .warrior-editor */
+    margin: 0 auto;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px;
+    border-bottom: 1px solid #444;
+  }
+  
+  header .left, header .right {
+    display: flex;
+  }
+  
+  header .header-btn {
+    margin-right: 10px;
+    text-decoration: none;
+    color: white;
+    background-color: #7a44cf; /* Set background color */
+    padding: 10px 15px; /* Increase padding */
+    border-radius: 5px; /* Add border radius */
+    font-size: 16px; /* Increase font size */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Add pointer cursor */
+  }
+  
+  button:hover {
+    background-color: #6839b3;
+  }
+  
+  .title {
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .add-warrior-btn {
+    font-size: 16px;
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #7a44cf;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Add border radius */
+  }
+  
+  .warrior-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .warrior-block {
+    display: flex;
+    justify-content: space-between;
+    background-color: #333;
+    padding: 25px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    width: 50%;
+    max-width: 700px;
+    margin: 5px auto;
+}
+
+
+@media only screen and (max-width: 1200px) {
+    .warrior-block {
+        flex-direction: column; 
+        align-items: center; 
+        text-align: center; 
+    }
+
+    .warrior-block button {
+        width: 100%; 
+        margin-bottom: 10px; 
+    }
+}
+  
+  .warrior-info, .warrior-status, .warrior-actions {
+    flex: 1;
+  }
+  
+  .warrior-block h2 {
+    margin-top: 0;
+  }
+  
+  .warrior-block .label {
+    font-weight: bold;
+  }
+  
+  .warrior-block button {
+    background-color: #7a44cf;
+    font-size: 16px;
+    color: white;
+    border: none;
+    padding: 10px 15px; 
+    cursor: pointer;
+    margin-bottom: 5px;
+    flex: 1; 
+    border-radius: 5px; 
+    width: 125%;
+  }
+  
+  .warrior-block .actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  
+.warrior-block button:disabled {
+    background-color: #999; /* Gray color for disabled buttons */
+    cursor: not-allowed; /* Change cursor to indicate disabled state */
+  }
+
+  
+  .won,.lost {
+    padding: 10px;
+    margin-top: 5px; /* Add space between won and lost */
+    font-size: 18px;
+  }
+
+  .wl_block{
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  
+  .won {
+    color: #00ff00;
+  }
+  
+  .lost {
+    color: #ff0000;
+  }
+  
+  .status {
+    text-align: center;
+    font-size: 20px;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+  
+  .status.busy {
+    color: #ff0000;
+  }
+  
+  .status.free {
+    color: #00ff00;
+  }
+  

@@ -1,0 +1,143 @@
+.container {
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    margin-top: 50px; 
+    width: 50%; 
+    max-width: 600px; 
+    background-color: #1a1a1a; 
+    padding: 25px; 
+    border: 1px solid #444;
+    border-radius: 5px; 
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.text {
+    color: #fafafa;
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.underline{
+    width: 61px;
+    height: 6px;
+    background: #e4e4e4;
+    border-radius: 9px;
+}
+
+.inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-top: 40px;
+    width: 100%;
+}
+
+
+.input {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 3px solid #4e484f;
+    border-radius: 5px;
+    margin: 0 auto;
+    width: 70%;
+    background-color: #2d282e;/* Match background color */
+}
+
+.input img {
+    margin: 0 15px; /* Adjust margin for consistency */
+}
+
+.input input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e4e4e4;
+    font-size: 19px;
+}
+
+.input.focused-username {
+    border: 3px #603cd2 solid;
+}
+
+.input.focused-email {
+    border: 3px #603cd2 solid;
+}
+
+.input.focused-password {
+    border: 3px #603cd2 solid;
+
+}
+
+.input.focused-password-repeat {
+    border: 3px #603cd2 solid;
+}
+
+.input.error input {
+    border-color: red;
+  }
+  
+  .have-account {
+    text-align: center; /* Center the text */
+    color: #e4e4e4;
+    font-size: 19px;
+    margin: 15px auto; /* Add margin for spacing */
+}
+
+.link{
+    text-decoration: none;
+}
+
+.have-account span {
+    color: #79a3f1;
+}
+
+.have-account span:hover {
+    color: #afc9f9;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.submit-container {
+    display: flex;
+    gap: 30px;
+    margin: 40px auto;
+}
+
+
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 62px;
+    color: white;
+    background: #7632cd;
+    border-radius: 10px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.eye-icon {
+    height: 30px;
+    color: white;
+}
+
+
+.error-message {
+    color: red;
+    font-size: 16px;
+    text-align: center;
+}
