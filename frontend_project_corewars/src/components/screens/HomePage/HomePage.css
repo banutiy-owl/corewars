@@ -1,0 +1,21 @@
+.user-text-welcome {
+  margin : 80px;
+  margin-top: 100px;
+  color: #fafafa;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.underline{
+  margin: 0 auto;
+}
+
+.description-text-user{
+  margin-top:30px;
+  color: #e4e4e4;
+  font-size: 19px;
+  text-align: center;
+  padding-bottom: 70px;
+  max-width: 700px;
+  margin: 0 auto;
+}

@@ -1,0 +1,46 @@
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+  }
+  
+  .checkbox-container input {
+    display: none;
+  }
+  
+  .checkmark {
+    margin: 10px;
+    height: 30px;
+    width: 30px;
+    background-color: #7a44cf;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  
+  .checkbox-container input:checked + .checkmark {
+    background-color: #7a44cf;
+  }
+  
+  .checkbox-container input:checked + .checkmark:after {
+    content: "";
+    display: block;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 4px 4px 0;
+    transform: rotate(45deg);
+    margin-left: 11px;
+    margin-top: 6px;
+  }
+
+  .new-game-btn{
+    font-size: 18px;
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #7a44cf;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
