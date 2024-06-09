@@ -307,61 +307,75 @@ def getWarrior(warrior_id):
 
 # ----------- GAMES ------------
 @login_required
-def saveGame(warrior_1_id,warrior_2_id):
-    warrior_ref = ref.child('warriors')
-    warrior_1_code = warrior_ref.child(warrior_1_id).get('code')
-    warrior_2_code = warrior_ref.child(warrior_2_id).get('code')
-    cycles, round_winner_id, wins, core_states, exceptions = game(warrior_1_id, warrior_1_code, warrior_2_id, warrior_2_code)
-    if wins[warrior_1_id] > wins[warrior_2_id]:
-        #warrior_1 and it's user update
-        warrior_1_wins = warrior_ref.child(warrior_1_id).get('won')
-        warrior_ref.child(warrior_1_id).update({'won': warrior_1_wins + 1})
-        warrior_1_user_id = warrior_ref.child(warrior_1_id).get('user_id')
-        user_ref = ref.child('users').child(warrior_1_user_id)
-        user_won = user_ref.child('won').get()
-        user_ref.update({'won': user_won + 1})
-        
-        #warrior_2 and it's user update
-        warrior_2_lost = warrior_ref.child(warrior_2_id).get('lost')
-        warrior_ref.child(warrior_2_id).update({'lost': warrior_2_lost + 1})
-        warrior_2_user_id = warrior_ref.child(warrior_2_id).get('user_id')
-        user_ref = ref.child('users').child(warrior_2_user_id)
-        user_lost = user_ref.child('lost').get()
-        user_ref.update({'lost': user_lost + 1})
-    elif wins[warrior_1_id] < wins[warrior_2_id]:
-        warrior_2_wins = warrior_ref.child(warrior_2_id).get('won')
-        warrior_ref.child(warrior_2_id).update({'won': warrior_2_wins + 1})
-        warrior_2_user_id = warrior_ref.child(warrior_2_id).get('user_id')
-        user_ref = ref.child('users').child(warrior_2_user_id)
-        user_won = user_ref.child('won').get()
-        user_ref.update({'won': user_won + 1})
+def saveGame(warrior_id):
+    games_ref = ref.child('games')
+    waiting_games = games_ref.order_by_child('warior_2_id').equal_to('').get()
+    waiting_games_list = list(waiting_games.items())
+    if waiting_games_list:
+        game = waiting_games_list[0]
+        game_id = game[0]
+        warrior_1_id = game[1].get('warrior_1_id','')
+        warrior_2_id = warrior_id
+        warrior_ref = ref.child('warriors')
+        warrior_1_code = warrior_ref.child(warrior_1_id).get('code')
+        warrior_2_code = warrior_ref.child(warrior_2_id).get('code')
+        cycles, round_winner_id, wins, core_states, exceptions = game(warrior_1_id, warrior_1_code, warrior_2_id, warrior_2_code)
+        if wins[warrior_1_id] > wins[warrior_2_id]:
+            #warrior_1 and it's user update
+            warrior_1_wins = warrior_ref.child(warrior_1_id).get('won')
+            warrior_ref.child(warrior_1_id).update({'won': warrior_1_wins + 1})
+            warrior_1_user_id = warrior_ref.child(warrior_1_id).get('user_id')
+            user_ref = ref.child('users').child(warrior_1_user_id)
+            user_won = user_ref.child('won').get()
+            user_ref.update({'won': user_won + 1})
+            
+            #warrior_2 and it's user update
+            warrior_2_lost = warrior_ref.child(warrior_2_id).get('lost')
+            warrior_ref.child(warrior_2_id).update({'lost': warrior_2_lost + 1})
+            warrior_2_user_id = warrior_ref.child(warrior_2_id).get('user_id')
+            user_ref = ref.child('users').child(warrior_2_user_id)
+            user_lost = user_ref.child('lost').get()
+            user_ref.update({'lost': user_lost + 1})
+        elif wins[warrior_1_id] < wins[warrior_2_id]:
+            warrior_2_wins = warrior_ref.child(warrior_2_id).get('won')
+            warrior_ref.child(warrior_2_id).update({'won': warrior_2_wins + 1})
+            warrior_2_user_id = warrior_ref.child(warrior_2_id).get('user_id')
+            user_ref = ref.child('users').child(warrior_2_user_id)
+            user_won = user_ref.child('won').get()
+            user_ref.update({'won': user_won + 1})
 
-        warrior_1_lost = warrior_ref.child(warrior_1_id).get('lost')
-        warrior_ref.child(warrior_1_id).update({'lost': warrior_1_lost + 1})
-        warrior_1_user_id = warrior_ref.child(warrior_1_id).get('user_id')
-        user_ref = ref.child('users').child(warrior_1_user_id)
-        user_lost = user_ref.child('lost').get()
-        user_ref.update({'lost': user_lost + 1})
-    game_data = {
-            "warrior_1_id": warrior_1_id,
-            "warrior_2_id": warrior_2_id,
-            "warrior_1_wins": wins[warrior_1_id],
-            "warrior_2_wins": wins[warrior_2_id],
+            warrior_1_lost = warrior_ref.child(warrior_1_id).get('lost')
+            warrior_ref.child(warrior_1_id).update({'lost': warrior_1_lost + 1})
+            warrior_1_user_id = warrior_ref.child(warrior_1_id).get('user_id')
+            user_ref = ref.child('users').child(warrior_1_user_id)
+            user_lost = user_ref.child('lost').get()
+            user_ref.update({'lost': user_lost + 1})
+        game_data = {
+                "warrior_1_id": warrior_1_id,
+                "warrior_2_id": warrior_2_id,
+                "warrior_1_wins": wins[warrior_1_id],
+                "warrior_2_wins": wins[warrior_2_id]
+            }
+        games_ref.child(game_id).update(game_data)
+        for r in range(10):
+            round_data = {
+                "round_number": r,
+                "game_id": game_id,
+                "cycles": cycles[r],
+                "winner": round_winner_id[r],
+                "error": exceptions[r]
+            }
+            ref.child('rounds').push(round_data)
+        filepath = "/games/" + game_id + ".txt"
+        blob = bucket.blob(filepath)
+        blob.upload_from_string(core_states)
+    else:
+        game_data = {
+            "warrior_1_id": warrior_id,
+            "warrior_2_id": '',
+            "warrior_1_wins": '',
+            "warrior_2_wins": ''
         }
-    new_game_ref = ref.child('games').push(game_data)
-    new_game_id = new_game_ref.key
-    for r in range(10):
-        round_data = {
-            "round_number": r,
-            "game_id": new_game_id,
-            "cycles": cycles[r],
-            "winner": round_winner_id[r],
-            "error": exceptions[r]
-        }
-        new_game_ref = ref.child('rounds').push(round_data)
-    filepath = "/games/" + new_game_id + ".txt"
-    blob = bucket.blob(filepath)
-    blob.upload_from_string(core_states)
 
 @login_required
 def saveRound(round_number,game_id,cycles,warr_1_lives,warr_1_wins,warr_2_lives,warr_2_wins):
