@@ -32,6 +32,18 @@
     border: none; /* Remove default border */
     cursor: pointer; /* Add pointer cursor */
   }
+
+  header .header-btn-current {
+    margin-right: 10px;
+    text-decoration: none;
+    color: white;
+    background-color: #9f73e6; /* Set background color */
+    padding: 10px 15px; /* Increase padding */
+    border-radius: 5px; /* Add border radius */
+    font-size: 16px; /* Increase font size */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Add pointer cursor */
+  }
   
   button:hover {
     background-color: #6839b3;

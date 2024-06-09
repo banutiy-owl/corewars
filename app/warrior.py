@@ -22,4 +22,4 @@ class Warrior(object):
             "lost": self.lost,
             "busy": self.busy
         }
-        ref.child('worriors').push(worrior_data)
+        ref.child('warriors').push(worrior_data)
