@@ -1,6 +1,3 @@
-# UWAGA Wywołanie app.py: z poziomu głównego folderu robimy "python -m app.app"
-
-
 # Core War
 
 [![Build Status](https://travis-ci.org/rodrigosetti/corewar.svg?branch=master)](https://travis-ci.org/rodrigosetti/corewar)
