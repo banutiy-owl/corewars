@@ -12,13 +12,13 @@ import os
 import time
 import zxcvbn
 import re
-from warrior import Warrior
+from app.warrior import Warrior
 import pandas as pd
 from corewar_driver.corewar.game import game
+import os
 
-
-
-cred = credentials.Certificate("corewars-48cd2-firebase-adminsdk-tyekb-3eddbce5b0.json")
+file_path = os.path.abspath('app\corewars-48cd2-firebase-adminsdk-tyekb-3eddbce5b0.json')
+cred = credentials.Certificate(file_path)
 databaseURL = 'https://corewars-48cd2-default-rtdb.europe-west1.firebasedatabase.app/'
 storageBucket = 'gs://corewars-48cd2.appspot.com/games_files'
 firebase_admin.initialize_app(cred,{
@@ -214,6 +214,12 @@ def logout():
     logout_user()
     return redirect("/")
 
+@app.route("/user_info", methods=['GET'])
+def get_user_info():
+    user_id = request.args.get('id')
+    users_ref = ref.child('users')
+    result = users_ref.child(user_id).get()
+    return jsonify({"won":result.get('won'), "lost": result.get('lost')}, 201)
 
 @app.route("/hello", methods=['GET'])
 @login_required
