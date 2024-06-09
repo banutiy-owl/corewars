@@ -8,12 +8,17 @@ const Header = () => {
     navigate("/home");
   };
 
-  const handleWarriorsClick = () => {
-    navigate("/warriors");
+
+  const handleHistoryClick = () => {
+    navigate("/history");
   };
 
   const handleNewGame = () => {
     navigate("/new-game");
+  };
+
+  const handleWarriorsClick = () => {
+    navigate("/warriors");
   };
 
   return (
@@ -30,6 +35,7 @@ const Header = () => {
         <button className="header-btn" onClick={handleNewGame}>
           New Game
         </button>
+        <button className="header-btn-current" onClick={handleHistoryClick}>History</button>
       </div>
     </header>
   );
