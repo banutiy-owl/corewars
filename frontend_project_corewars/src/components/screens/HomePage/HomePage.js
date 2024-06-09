@@ -1,15 +1,22 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 
 import Header from "./Header";
 import "./HomePage.css";
 
 function HomePage() {
+  const [username, setusername] = useState("");
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    if (storedUsername) {
+      setusername(storedUsername);
+    }
+  }, []);
   return (
     <div className="body">
       <Header />
       <div className="header">
         <div className="user-text-welcome">
-          Welcome User
+          Welcome {username}
           <div className="underline"></div>
         </div>
         
