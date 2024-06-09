@@ -4,6 +4,7 @@ from firebase_admin import db
 from firebase_admin import storage
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from flask_cors import CORS
 import secrets
 from collections import deque
 from passlib.hash import pbkdf2_sha256
@@ -28,6 +29,7 @@ ref = db.reference("/")
 bucket = storage.bucket()
 
 app = Flask(__name__)
+CORS(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -94,70 +96,60 @@ def hash_password(password, salt, rounds=100000):
     return pbkdf2_sha256.using(salt=salt, rounds=rounds).hash(password)
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['POST'])
 def register():
-    if request.method == 'GET':
-        return render_template('register.html')
-    elif request.method == 'POST':
-        email = request.form["email"]
-        username = request.form["username"]
-        password = request.form["password"]
-        confirm_password = request.form["confirm_password"]
-        if password == confirm_password:
-            if len(password) < 8:
-                error = 'Password must contain at least 8 characters'
-                return render_template("register.html", error=error)
-            
-            if not any(char.isdigit() for char in password):
-                error = 'Password must contain at least one digit'
-                return render_template("register.html", error=error)
-            
-            if not any(char.isupper() for char in password): 
-                error = 'Password must contain at least one uppercase letter'
-                return render_template("register.html", error=error)
-            
-            if not any(char.islower() for char in password):
-                error = 'Password must contain at least one lowercase letter'
-                return render_template("register.html", error=error)
-            
-            if not any(char in '!@#$%^&*()-_=+[]{}|;:\'",.<>/?' for char in password):
-                error = 'Password must contain at least one special character'
-                return render_template("register.html", error=error)
-            
-            password_strength = zxcvbn.zxcvbn(password)
-            if password_strength['score'] > 3:
-                error = 'Password does not meet entropy requirements'
-                return render_template("register.html", error=error)
+    data = request.json
+    email = data["email"]
+    username = data["username"]
+    password = data["password"]
+    confirm_password = data["confirm_password"]
+    if password == confirm_password:
+        if len(password) < 8:
+            return jsonify({"error": 'Password must contain at least 8 characters'}), 400
+        
+        if not any(char.isdigit() for char in password):
+            return jsonify({"error": 'Password must contain at least one digit'}), 400
+        
+        if not any(char.isupper() for char in password): 
+            return jsonify({"error": 'Password must contain at least one uppercase letter'}), 400
+        
+        if not any(char.islower() for char in password):
+            return jsonify({"error": 'Password must contain at least one lowercase letter'}), 400
+        
+        if not any(char in '!@#$%^&*()-_=+[]{}|;:\'",.<>/?' for char in password):
+            return jsonify({"error": 'Password must contain at least one special character'}), 400
+        
+        password_strength = zxcvbn.zxcvbn(password)
+        if password_strength['score'] > 3:
+            return jsonify({"error": 'Password is too easy to hack'}), 400
 
-            users_ref = ref.child('users')
-            query = users_ref.order_by_child('email').equal_to(email).limit_to_first(1)
-            results = query.get()
+        users_ref = ref.child('users')
+        query = users_ref.order_by_child('email').equal_to(email).limit_to_first(1)
+        results = query.get()
 
-            if results:
-                error = 'The email was already registered'
-                return render_template("register.html", error=error)
-            
-            query = users_ref.order_by_child('username').equal_to(username).limit_to_first(1)
-            results = query.get()
+        if results:
+            return jsonify({"error": 'The email was already registered'}), 400
+        
+        query = users_ref.order_by_child('username').equal_to(username).limit_to_first(1)
+        results = query.get()
 
-            if results:
-                error = 'The username was already taken'
-                return render_template("register.html", error=error)
+        if results:
+            return jsonify({"error": 'The username was already taken'}), 400
 
-            salt = generate_salt()
-            hashed_password = hash_password(password, salt)
-            user_data = {
-				"email": email,
-				"password": hashed_password,
-				"username": username,
-				"won": 0,
-				"lost": 0
-			}
-            ref.child('users').push(user_data)
-            return redirect("/")
-        else:
-            error = 'Passwords do not match'
-            return render_template("register.html", error=error)
+        salt = generate_salt()
+        hashed_password = hash_password(password, salt)
+        user_data = {
+            "email": email,
+            "password": hashed_password,
+            "username": username,
+            "won": 0,
+            "lost": 0
+        }
+        new_user_ref = ref.child('users').push(user_data)
+        new_user_id = new_user_ref.key
+        return jsonify({"message": "Registration successful", "user_id":new_user_id}), 200
+    else:
+        return jsonify({"error": 'Passwords do not match'}), 400
 
 
 def random():
@@ -189,41 +181,31 @@ def verify_password(provided_password, stored_password):
 
 recent_users = deque(maxlen=3)
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/login", methods=["POST"])
 def login():
-    if request.method == "GET":
-        return render_template("index.html")
-    
-    if request.method == "POST":
-        login = request.form.get("login")
-        password = request.form.get("password")
-        users_ref = ref.child('users')
-        query = users_ref.order_by_child('email').equal_to(login).get()
-        result = list(query.values())
+    data = request.json
+    login = data.get("login")
+    password = data.get("password")
+    users_ref = ref.child('users')
+    query = users_ref.order_by_child('username').equal_to(login).get()
+    result = list(query.values())
 
-        if not result:
-            query = users_ref.order_by_child('username').equal_to(login).get()
-            result = list(query.values())
-            if not result:
-                error = "Incorrect login details"
-                return render_template("index.html", error=error)
+    if not result:
+        return jsonify({"error": "Incorrect login details"}), 400
 
-        user_id = list(query.keys())[0]
-        user = user_loader(user_id)
+    user_id = list(query.keys())[0]
+    user = user_loader(user_id)
 
-        if user is None:
-            error = "Incorrect login details"
-            time.sleep(random())
-            return render_template("index.html", error=error)
-
-        if verify_password(password, user.password):
-            login_user(user)
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('hello'))
-
-        error = "Incorrect login details"
+    if user is None:
         time.sleep(random())
-        return render_template("index.html", error=error)
+        return jsonify({"error": "Incorrect login details"}), 400
+
+    if verify_password(password, user.password):
+        login_user(user)
+        return jsonify({"message": "Login successful", "user_id": user_id}), 200
+
+    time.sleep(random())
+    return jsonify({"error": "Incorrect login details"}), 400
 
 
 @app.route("/logout")

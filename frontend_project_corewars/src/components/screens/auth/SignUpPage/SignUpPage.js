@@ -1,4 +1,5 @@
 import { React, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../this.auth.css";
 import {
   handleSignUp,
@@ -17,6 +18,7 @@ import eye_closed from "../../../assets/eye_closed.png";
 import { Link } from "react-router-dom";
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRepeat, setShowPasswordRepeat] = useState(false);
 
@@ -70,6 +72,23 @@ const SignUpPage = () => {
 
   const togglePasswordRepeatVisibility = () => {
     setShowPasswordRepeat(!showPasswordRepeat);
+  };
+
+  const handleSignUpWrapper = async () => {
+    const signUpSuccess = await handleSignUp(
+      username,
+      email,
+      password,
+      passwordRepeat,
+      setUsernameError,
+      setEmailError,
+      setPasswordError,
+      setPasswordErrorRepeat
+    );
+
+    if (signUpSuccess) {
+      navigate("/home");
+    }
   };
 
   return (
@@ -158,18 +177,7 @@ const SignUpPage = () => {
       <div className="submit-container">
         <div
           className="button"
-          onClick={() =>
-            handleSignUp(
-              username,
-              email,
-              password,
-              passwordRepeat,
-              setUsernameError,
-              setEmailError,
-              setPasswordError,
-              setPasswordErrorRepeat
-            )
-          }
+          onClick={handleSignUpWrapper}
         >
           Sign up
         </div>
