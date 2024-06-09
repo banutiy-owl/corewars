@@ -24,9 +24,9 @@ def game(warrior_1_id, warrior_1_code, warrior_2_id, warrior_2_code, coresize=No
     n_cycles = maxcycles if maxcycles else 8000
     
     warrior_1 = redcode.parse(warrior_1_code.split('\n'), DEFAULT_ENV)
-    warrior_1.id = warrior_1_id
+    warrior_1.id = 1
     warrior_2 = redcode.parse(warrior_2_code.split('\n'), DEFAULT_ENV)
-    warrior_2.id = warrior_2_id
+    warrior_2.id = 2
 
     cycles = n_rounds * [None]
     wins = {warrior_1_id: 0, warrior_2_id: 0}
