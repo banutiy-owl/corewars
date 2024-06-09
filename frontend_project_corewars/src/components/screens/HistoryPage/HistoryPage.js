@@ -34,8 +34,11 @@ const HistoryPage = () => {
     <div className="body">
       <Header />
       <h1 className="title">History</h1>
-
-      <GameList games={games} onShow={handleShowGame} />
+      {games.length === 0 ? (
+        <p>You don't have any games yet. Go to the "New game" page and start your record.</p>
+      ) : (
+        <GameList games={games} onShow={handleShowGame} />
+      )}
     </div>
   );
 };
