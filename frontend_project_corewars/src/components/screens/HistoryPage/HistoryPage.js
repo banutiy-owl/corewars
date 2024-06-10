@@ -1,30 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import GameList from "./GameList";
+import axios from "axios";
 
 import "./styles.css";
 
 const HistoryPage = () => {
-  const [games, setGames] = useState([
-    {
-      id: 1,
-      name: "Game 2",
-      warrior1: "Warrior 1",
-      warrior1_wins: 2,
-      warrior2: "Warrior 2",
-      warrior2_wins: 1,
-    },
-    {
-      id: 2,
-      name: "Game 1",
-      warrior1: "Warrior 1",
-      warrior1_wins: 1,
-      warrior2: "Warrior 2",
-      warrior2_wins: 3,
-    },
-  ]);
+  const [games, setGames] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const user_id = localStorage.getItem("user_id");
+        if (!user_id) {
+          navigate('/');
+        }
+        const response = await axios.get(`/get_games?user_id=${user_id}`);
+        setGames(response.data);
+      } catch (error) {
+        console.error("Error fetching games:", error);
+      }
+    };
+
+    fetchGames();
+  });
 
   const handleShowGame = () => {
     navigate("/game-review");
