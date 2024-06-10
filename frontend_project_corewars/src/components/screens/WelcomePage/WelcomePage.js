@@ -1,9 +1,18 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
 import "./WelcomePage.css";
 
-import { Link } from "react-router-dom";
-
 const WelcomePage = () => {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate("/login"); 
+  };
+
+  const handleSignupClick = () => {
+    navigate("/register");
+  };
   return (
     <div className="container">
       <div className="header">
@@ -16,12 +25,8 @@ const WelcomePage = () => {
         <div className="underline"></div>
       </div>
       <div className="submit-container">
-        <Link to="/login">
-          <div className="button">Login</div>
-        </Link>
-        <Link to="/register">
-          <div className="button">Sign up</div>
-        </Link>
+        <div className="button" onClick={handleLoginClick}>Login</div> {/* Use onClick event handler */}
+        <div className="button" onClick={handleSignupClick}>Sign up</div> {/* Use onClick event handler */}
       </div>
 
       <div className="description-text">

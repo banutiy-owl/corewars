@@ -1,9 +1,19 @@
+.body.home{
+  margin-bottom: 50px;
+}
+
+
+.header-btn.active {
+  background-color: #2839f1;
+}
+
 .user-text-welcome {
   margin : 80px;
   margin-top: 100px;
   color: #fafafa;
-  font-size: 48px;
   font-weight: 700;
+  font-size: 35px;
+  margin-bottom: 20px;
 }
 
 .underline{
@@ -13,9 +23,103 @@
 .description-text-user{
   margin-top:30px;
   color: #e4e4e4;
-  font-size: 19px;
   text-align: center;
   padding-bottom: 70px;
   max-width: 700px;
   margin: 0 auto;
+  line-height: 1.5;
+}
+
+
+
+.underline {
+  width: 100px;
+  height: 3px;
+  background-color: #000;
+  margin-top: 5px;
+}
+
+.description-text-user {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.instructions{
+  color: #e4e4e4;
+  max-width: 1000px;
+  margin: 0 auto;
+  line-height: 1.5;
+  font-size: 18px;
+  margin-bottom: 50px
+}
+
+.instructions h1 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  
+}
+
+.instructions h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.instructions h4  {
+font-size: 20px;
+}
+
+
+.instructions strong {
+  color: #b47dfc;
+}
+
+.instructions ul {
+  margin-top: 10px; 
+  list-style-type: none; 
+}
+
+.instructions li {
+  margin-bottom: 10px; 
+}
+
+.instructions code {
+  background-color: #4a148c; 
+  color: #ffffff; 
+  padding: 2px 4px; 
+  border-radius: 4px; 
+}
+
+.code-block {
+  background-color: #2d2d2d; 
+  color: #dcdcdc;
+  font-family: 'Courier New', Courier, monospace; 
+
+  border-radius: 5px; 
+  overflow-x: auto; 
+  max-width: 100%; 
+ 
+  padding: 15px; 
+  margin-top: 20px; 
+}
+
+.dwarf_example {
+  padding-left: 65px;
+}
+
+.padd_example {
+  padding-left: 55px;
+}
+
+.conclusion-text {
+  background-color: #7a44cf;
+  color: #f4f4f4;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 50px;
 }
