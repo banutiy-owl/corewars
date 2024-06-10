@@ -1,3 +1,6 @@
 firebase_admin
 flask
+flask_cors
 flask_login
+passlib
+zxcvbn

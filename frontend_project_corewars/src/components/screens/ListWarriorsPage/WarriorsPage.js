@@ -1,16 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import WarriorList from "./WarriorList";
+import axios from "axios";
 
 import "./styles.list.css";
 
 const WarriorsPage = () => {
-  const [warriors, setWarriors] = useState([
-    { id: 1, name: "Warrior 1", busy: true, won: 2, lost: 1 },
-    { id: 2, name: "Warrior 2", busy: false, won: 1, lost: 3 },
-  ]);
+  const [warriors, setWarriors] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchWarriors = async () => {
+      try {
+        const user_id = localStorage.getItem("user_id");
+        if (!user_id) {
+          navigate("/");
+        }
+        const response = await axios.get(`/get_warriors?user_id=${user_id}`);
+        setWarriors(response.data);
+      } catch (error) {
+        console.error("Error fetching warriors:", error);
+      }
+    };
+  fetchWarriors();
+});
 
   const handleAddWarriorClick = () => {
     navigate("/warrior");

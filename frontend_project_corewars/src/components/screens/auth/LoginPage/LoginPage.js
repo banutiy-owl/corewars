@@ -1,4 +1,5 @@
 import { React, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../this.auth.css";
 import {
   handleSignIn,
@@ -15,6 +16,7 @@ import eye_closed from "../../../assets/eye_closed.png";
 import { Link } from "react-router-dom";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const [isFocusedUsername, setIsFocusedUsername] = useState(false);
@@ -38,6 +40,18 @@ const LoginPage = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleSignInWrapper = async () => {
+    const signInSuccess = await handleSignIn(
+      username,
+      password,
+      setPasswordError
+    );
+
+    if (signInSuccess) {
+      navigate("/home");
+    }
   };
 
   return (
@@ -81,8 +95,7 @@ const LoginPage = () => {
       <div className="submit-container">
         <div
           className="button"
-          onClick={() =>
-            handleSignIn(username, password, setUsernameError, setPasswordError)
+          onClick={handleSignInWrapper
           }
         >
           Login

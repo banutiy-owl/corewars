@@ -1,19 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import WarriorsTickList from "./WarriorsTickList";
+import axios from "axios";
+
 
 import "./styles.css";
 
 const NewGamePage = () => {
-  const [warriors, setWarriors] = useState([
-    { id: 1, name: "Warrior 1", busy: true, won: 2, lost: 1 },
-    { id: 3, name: "Warrior 3", busy: false, won: 2, lost: 1 },
-    { id: 2, name: "Warrior 2", busy: false, won: 1, lost: 3 },
-  ]);
+  const [warriors, setWarriors] = useState([]);
   const navigate = useNavigate();
 
   const [selectedWarrior, setSelectedWarrior] = useState(null);
+
+  useEffect(() => {
+    const fetchWarriors = async () => {
+      try {
+        const user_id = localStorage.getItem("user_id");
+        if (!user_id) {
+          navigate("/");
+        }
+        const response = await axios.get(`/get_warriors?user_id=${user_id}`);
+        setWarriors(response.data);
+      } catch (error) {
+        console.error("Error fetching warriors:", error);
+      }
+    };
+  fetchWarriors();
+});
 
   const handleTick = (id) => {
     setSelectedWarrior(selectedWarrior === id ? null : id);

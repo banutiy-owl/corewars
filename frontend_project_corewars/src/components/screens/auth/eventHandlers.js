@@ -4,8 +4,9 @@ import {
   validatePassword,
   validatePasswordRepeat,
 } from "./formValidations";
+import axios from 'axios';
 
-export const handleSignUp = (
+export const handleSignUp = async (
   username,
   email,
   password,
@@ -26,25 +27,49 @@ export const handleSignUp = (
   setPasswordRepeatError(passwordRepeatError);
 
   if (usernameError || emailError || passwordError || passwordRepeatError) {
-    return;
+    return false;
   }
+
+  try {
+    const response = await axios.post('http://127.0.0.1:5000/register', {
+      username,
+      email,
+      password,
+      confirm_password: passwordRepeat
+    });
+    console.log(response.data.message);
+    localStorage.setItem("user_id", response.data.user_id);
+    localStorage.setItem("username", username);
+    return true;
+  } catch (error) {
+    if (error.response) {
+        const errorMessage = error.response.data.error;
+        if (errorMessage.includes('username')) setUsernameError(errorMessage);
+        else if (errorMessage.includes('email')) setEmailError(errorMessage);
+        else if (errorMessage.includes('Password')) setPasswordError(errorMessage);
+        else setPasswordRepeatError(errorMessage);
+      }
+      return false;
+    }
 };
 
-export const handleSignIn = (
+export const handleSignIn = async (
   username,
   password,
-  setUsernameError,
   setPasswordError,
 ) => {
-  const usernameError = validateUsername(username);
-  const passwordError = validatePassword(password);
-
-  setUsernameError(usernameError);
-  setPasswordError(passwordError);
-
-
-  if (usernameError || passwordError) {
-    return;
+  try {
+    const response = await axios.post("http://127.0.0.1:5000/login", {
+      login: username,
+      password: password,
+    });
+    console.log(response.data.message);
+    localStorage.setItem("user_id", response.data.user_id);
+    localStorage.setItem("username", username);
+    return true;
+  } catch (error) {
+    setPasswordError(error.response.data.error);
+    return false;
   }
 };
 
