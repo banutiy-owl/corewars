@@ -13,3 +13,13 @@
 .label2{
     color: #fec1c1;
 }
+
+.games-statistics {
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.won, .lost {
+    padding: 0px;
+    font-size: 22px;
+}
