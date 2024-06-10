@@ -1,7 +1,5 @@
 import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import db
-from firebase_admin import storage
+from firebase_admin import credentials, db, storage
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_cors import CORS
@@ -15,6 +13,7 @@ import re
 from app.warrior import Warrior
 import pandas as pd
 from corewar_driver.corewar.game import game
+from corewar_driver.corewar.redcode import parse
 import os
 
 file_path = os.path.abspath('app\corewars-48cd2-firebase-adminsdk-tyekb-3eddbce5b0.json')
@@ -229,40 +228,68 @@ def hello():
 
         return render_template("hello.html", username=username)
 
+
 # ----------- WARRIORS ------------
+@app.route('/warriors', methods=['POST'])
 @login_required
-def addNewWarrior(name,code):
-    warrior = Warrior(name)
+def save_warrior():
+    if 'file' in request.files:
+        file = request.files['file']
+        if file:
+            with open(file, "r") as f:
+                text = f.readlines()            
+    elif 'code' in request.form:
+        text = request.form['code']
+    else:
+        return jsonify({"error": "File or text code are required"}), 400
+    
+    try:
+        DEFAULT_ENV = {'CORESIZE': 8000}
+        warrior = parse(text.split('\n'), DEFAULT_ENV)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    warrior = saveNewWarrior(warrior.name,text)
+    return jsonify({"message": "Added warrior successfully", "name": warrior.name}), 200
+
+@login_required
+def saveNewWarrior(name,code):
     warrior_data = {
         "user_id": current_user.id,
 		"name": name,
+        "code": code,
 		"won": 0,
 		"lost": 0,
         "busy": False
 	}
     new_warrior = ref.child('warriors').push(warrior_data)
     warrior_id = new_warrior.key
-    destination = "/warriors/"
-    filename = warrior_id
-    destination = destination + filename + '.txt'
-
-    local_file_path = filename + ".txt"
-    with open(local_file_path, 'w') as file:
-        file.write(code)
-
-    blob = bucket.blob(destination)
-    blob.upload_from_filename(local_file_path)
+    warrior = Warrior(warrior_id,current_user.id,name,code)
 
     return warrior
+
+@login_required
+def saveEditWarrior(warrior):
+    warrior_data = {
+        "user_id": warrior.warrior_id,
+		"name": warrior.name,
+        "code": warrior.code,
+		"won": warrior.won,
+		"lost": warrior.lost,
+        "busy": warrior.busy
+	}
+    warrior_ref = ref.child('warriors').child(warrior.warrior_id)
+    warrior_ref.update(warrior_data)
+
 
 
 @login_required
 def deleteWarrior(warrior_id):
-    filepath = "/warriors/" + warrior_id + ".txt"
-    blob = bucket.blob(filepath)
-    blob.delete()
-    user_ref = ref.child('warriors').child(warrior_id)
-    user_ref.delete()
+    warrior = getWarrior(warrior_id)
+    if warrior.warrior_id == current_user.id:
+        warrior_ref = ref.child('warriors').child(warrior_id)
+        warrior_ref.delete()
+
 
 
 @login_required
@@ -290,18 +317,12 @@ def getWarriorsList():
                   columns=['warrior_id', 'name', 'won', 'lost','busy'])
     
     return df
- 
-
-@login_required
-def saveWarrior(warrior):
-    warrior.saveToDB(ref)
-
 
 @login_required
 def getWarrior(warrior_id):
     warrior_ref = ref.child('warriors')
     warrior_data = warrior_ref.child(warrior_id)
-    warrior = Warrior(warrior_data.get('user_id'),warrior_data.get('name'),warrior_data.get('code'),
+    warrior = Warrior(warrior_data.get('user_id'),warrior_id,warrior_data.get('name'),warrior_data.get('code'),
                       warrior_data.get('won'),warrior_data.get('lost'),warrior_data.get('busy'))
     return warrior
 
