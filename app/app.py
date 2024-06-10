@@ -13,7 +13,6 @@ import time
 import zxcvbn
 import re
 from app.warrior import Warrior
-import pandas as pd
 from corewar_driver.corewar.game import game
 import os
 
@@ -219,7 +218,7 @@ def get_user_info():
     user_id = request.args.get('id')
     users_ref = ref.child('users')
     result = users_ref.child(user_id).get()
-    return jsonify({"won":result.get('won'), "lost": result.get('lost')}, 201)
+    return jsonify({"won":result.get('won'), "lost": result.get('lost')}), 201
 
 @app.route("/hello", methods=['GET'])
 @login_required
@@ -255,8 +254,7 @@ def addNewWarrior(name,code):
 
     return warrior
 
-
-@login_required
+@app.route("/delete_warrior", methods=['DELETE'])
 def deleteWarrior(warrior_id):
     filepath = "/warriors/" + warrior_id + ".txt"
     blob = bucket.blob(filepath)
@@ -264,11 +262,11 @@ def deleteWarrior(warrior_id):
     user_ref = ref.child('warriors').child(warrior_id)
     user_ref.delete()
 
-
-@login_required
+@app.route("/get_warriors", methods=['GET'])
 def getWarriorsList():
+    user_id = request.args.get('user_id')
     warriors_ref = ref.child('warriors')
-    query = warriors_ref.order_by_child('user_id').equal_to(current_user.id).get()
+    query = warriors_ref.order_by_child('user_id').equal_to(user_id).get()
     results = list(query.values())
     warriors_list = []
 
@@ -286,10 +284,7 @@ def getWarriorsList():
             warriors_list.append(data)
             i += 1
 
-    df = pd.DataFrame(warriors_list,
-                  columns=['warrior_id', 'name', 'won', 'lost','busy'])
-    
-    return df
+    return jsonify(warriors_list), 200
  
 
 @login_required
@@ -306,15 +301,59 @@ def getWarrior(warrior_id):
     return warrior
 
 # ----------- GAMES ------------
-@login_required
+@app.route("/get_games", methods=['GET'])
+def getGamesList():
+    user_id = request.args.get('user_id')
+
+    warriors_ref = ref.child('warriors')
+    query = warriors_ref.order_by_child('user_id').equal_to(user_id).get()
+    warriors_ids = list(query.keys())
+
+    games_ref = ref.child('games')
+    games_list = []
+
+    for warrior_id in warriors_ids:
+        query = games_ref.order_by_child('warrior_1_id').equal_to(warrior_id).get()
+        games_list.extend(list(query.values()))
+
+        query = games_ref.order_by_child('warrior_2_id').equal_to(warrior_id).get()
+        games_list.extend(list(query.values()))
+
+    response = []
+    for game_data in games_list:
+        warrior_1_id = game_data.get('warrior_1_id')
+        warrior_2_id = game_data.get('warrior_2_id')
+
+        warrior_1_data = warriors_ref.child(warrior_1_id).get()
+        warrior_2_data = warriors_ref.child(warrior_2_id).get()
+
+        warrior_1_name = warrior_1_data.get('name')
+        warrior_2_name = warrior_2_data.get('name')
+
+        warrior_1_wins = game_data.get('warrior_1_wins')
+        warrior_2_wins = game_data.get('warrior_2_wins')
+
+        game_info = {
+            "game_id": game_data.key(),
+            "warrior_1_name": warrior_1_name,
+            "warrior_2_name": warrior_2_name,
+            "warrior_1_wins": warrior_1_wins,
+            "warrior_2_wins": warrior_2_wins
+        }
+        response.append(game_info)
+
+    return jsonify(response), 200
+
+
+
 def saveGame(warrior_id):
     games_ref = ref.child('games')
     waiting_games = games_ref.order_by_child('warior_2_id').equal_to('').get()
     waiting_games_list = list(waiting_games.items())
     if waiting_games_list:
-        game = waiting_games_list[0]
-        game_id = game[0]
-        warrior_1_id = game[1].get('warrior_1_id','')
+        found_game = waiting_games_list[0]
+        game_id = found_game[0]
+        warrior_1_id = found_game[1].get('warrior_1_id','')
         warrior_2_id = warrior_id
         warrior_ref = ref.child('warriors')
         warrior_1_code = warrior_ref.child(warrior_1_id).get('code')
@@ -369,6 +408,8 @@ def saveGame(warrior_id):
         filepath = "/games/" + game_id + ".txt"
         blob = bucket.blob(filepath)
         blob.upload_from_string(core_states)
+        warrior_ref.child(warrior_1_id).update({'busy': False})
+        warrior_ref.child(warrior_2_id).update({'busy': False})
     else:
         game_data = {
             "warrior_1_id": warrior_id,
@@ -376,6 +417,9 @@ def saveGame(warrior_id):
             "warrior_1_wins": '',
             "warrior_2_wins": ''
         }
+        warriors_ref = ref.child('warriors')
+        warrior_ref = warriors_ref.child(warrior_id)
+        warrior_ref.update({'busy': True})
 
 @login_required
 def saveRound(round_number,game_id,cycles,warr_1_lives,warr_1_wins,warr_2_lives,warr_2_wins):
