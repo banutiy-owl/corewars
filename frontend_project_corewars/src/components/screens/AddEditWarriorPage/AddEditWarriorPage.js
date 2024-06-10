@@ -43,6 +43,7 @@ const AddEditWarriorPage = () => {
           />
         </div>
         <textarea
+          spellcheck="false"
           className="code-input"
           value={code}
           onChange={handleCodeChange}
