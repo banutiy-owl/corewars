@@ -17,14 +17,18 @@ const WarriorsPage = () => {
         if (!user_id) {
           navigate("/");
         }
-        const response = await axios.get(`/get_warriors?user_id=${user_id}`);
+        const response = await axios.get('http://127.0.0.1:5000/get_warriors', {
+          params: {
+            user_id : user_id
+          }
+        });
         setWarriors(response.data);
       } catch (error) {
         console.error("Error fetching warriors:", error);
       }
     };
   fetchWarriors();
-});
+}, []);
 
   const handleAddWarriorClick = () => {
     navigate("/warrior");
@@ -35,7 +39,14 @@ const WarriorsPage = () => {
   };
 
 
-  const handleDeleteWarrior = () => {};
+  const handleDeleteWarrior = async (warriorId) => {
+    try {
+      await axios.delete(`http://127.0.0.1:5000/warrior/${warriorId}`);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting warrior:", error);
+    }
+  };
 
   return (
     <div className="body">

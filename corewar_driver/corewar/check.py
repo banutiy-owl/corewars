@@ -1,37 +1,35 @@
-from corewar_driver.corewar.game import game
+from corewar_driver.corewar.game import game1, game
 
 dwarf = """
-;name Gemini
+;name dwarf
 ;author A. K. Dewdney
 
-        DAT.f    $0,    $0
-        DAT.f    $0,     $99
-        MOV.i   @-2,    @-1
-        SNE.b   $-3,     #9
-        JMP.f   $4,     $0
-        ADD.ab  #1,     $-5
-        ADD.ab  #1,     $-5
-        JMP.f   $-5,    $0
-        MOV.ab  #99,    $93
-        JMP.f   $93,    $0
+org inicio
 
-        END     2
+adic	add.ab  #2004,	$inicio
+inicio	mov.i   $2,	$2
+	jmp.f   $adic,	#0
 """
 bot = """
-;Name Fastest CoreClear
-;Author Rodrigo Setti
-;Strat Limpa a memoria rapidamente, entretando
-;Strat nuo possui cdigo anti-destruicco.
+;Name Dwarf Jumper
+;Author	Rodrigo Setti
+;Strat Lan�a c�digos de "pris�o" pela mem�ria
+;Strat que mant�m os processos inimigos
+;Strat paralizados, por�m, n�o � mortal.
 
-MOV.i	$2,	$2
-JMP.b	$-1,	>-1
+
+org 1
+
+mov.i	$1,	>2
+jmp.f   $-1,    >1
 """
 
 cycles, round_winner_id, wins, core_states, exceptions = game(123, dwarf, 321, bot)
 
 print(cycles)
-print(round_winner_id),
-print(wins),
+print(round_winner_id)
+print(wins)
+print(exceptions)
 f = open("testfile.txt", "a")
 f.write(core_states)
 f.close()
