@@ -3,10 +3,15 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../Header";
 import "./styles.css";
 import axios from "axios";
+import Popup from "../../Popup";
+
 
 const AddWarriorPage = () => {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -33,17 +38,21 @@ const AddWarriorPage = () => {
         code: code,
         user_id: user_id,
       });
-      if (!response.data) {
-        throw new Error("Failed to save warrior");
-      }
       navigate("/warriors");
     } catch (error) {
-      console.error("Error saving warrior:", error);
+      setPopupMessage(error.response.data.error);
+      setShowPopup(true);
+      setIsError(true);
     }
   };
 
   const handleCancel = () => {
     navigate("/warriors");
+  };
+
+  const handlePopupClose = () => {
+    
+    setShowPopup(false);
   };
 
   return (
@@ -74,6 +83,13 @@ const AddWarriorPage = () => {
           </button>
         </div>
       </div>
+      {showPopup && (
+        <Popup
+          isError={isError}
+          message={popupMessage}
+          onClose={handlePopupClose}
+        />
+      )}
     </div>
   );
 };

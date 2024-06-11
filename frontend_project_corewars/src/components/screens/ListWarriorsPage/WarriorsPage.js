@@ -13,10 +13,11 @@ const WarriorsPage = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isError, setIsError] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
-  /* useEffect(() => {
+  useEffect(() => {
     const fetchWarriors = async () => {
       try {
         const user_id = localStorage.getItem("user_id");
@@ -36,35 +37,55 @@ const WarriorsPage = () => {
         setIsError(true);
       }
     };
-  fetchWarriors();
-}, []);
-*/
+    const fetchData = async () => {
+      fetchWarriors();
+      setLoading(false);
+    };
+    fetchData();
+}, [navigate]);
 
 
   const handleAddWarriorClick = () => {
     navigate("/add-warrior");
   };
 
-  const handleEditWarrior = () => {
-    navigate("/edit-warrior");
+  const handleEditWarrior = (warrior) => {
+    navigate(`/edit-warrior`, {state: {warrior: warrior}});
   };
 
-  const handleDeleteWarrior = () => {
+  /*const handleDeleteWarrior = () => {
     setPopupMessage("Warrior deleted successfully.");
     setShowPopup(true);
     setIsError(false);
-  };
+  };*/
 
-  /*const handleDeleteWarrior = async (warriorId) => {
+  const handleDeleteWarrior = async (warriorId) => {
     try {
       await axios.delete(`http://127.0.0.1:5000/warrior/${warriorId}`);
-      window.location.reload();
+      navigate('/warriors');
+      setPopupMessage("Warrior deleted successfully.");
+      setShowPopup(true);
+      setIsError(true);
     } catch (error) {
-      console.error("Error deleting warrior:", error);
-    }*/
+      setPopupMessage("Error deleting warrior:", error);
+      setShowPopup(true);
+      setIsError(true);
+    }
+  };
   const handlePopupClose = () => {
     setShowPopup(false);
+    window.location.reload();
   };
+
+  if (loading) {
+    return (
+      <div className="body">
+        <Header />
+        <h1 className="title">Warriors</h1>
+        <p className="loading">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="body">
