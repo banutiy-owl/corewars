@@ -13,6 +13,7 @@ const WarriorsPage = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isError, setIsError] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
@@ -36,8 +37,12 @@ const WarriorsPage = () => {
         setIsError(true);
       }
     };
-  fetchWarriors();
-}, []);
+    const fetchData = async () => {
+      fetchWarriors();
+      setLoading(false);
+    };
+    fetchData();
+}, [navigate]);
 
 
   const handleAddWarriorClick = () => {
@@ -60,8 +65,7 @@ const WarriorsPage = () => {
       navigate('/warriors');
       setPopupMessage("Warrior deleted successfully.");
       setShowPopup(true);
-      setIsError(false);
-      setTimeout(() => window.location.reload(), 2000);
+      setIsError(true);
     } catch (error) {
       setPopupMessage("Error deleting warrior:", error);
       setShowPopup(true);
@@ -70,7 +74,18 @@ const WarriorsPage = () => {
   };
   const handlePopupClose = () => {
     setShowPopup(false);
+    window.location.reload();
   };
+
+  if (loading) {
+    return (
+      <div className="body">
+        <Header />
+        <h1 className="title">Warriors</h1>
+        <p className="loading">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="body">

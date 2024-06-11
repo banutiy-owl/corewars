@@ -466,6 +466,7 @@ def saveGame():
         filepath = f"games_files/{game_id}.txt"
         blob = bucket.blob(filepath)
         blob.upload_from_string(core_states)
+        return jsonify({"message": "The opponent was already waiting...\nYou can find results of the game in the history"}), 200
     else:
         game_data = {
             "warrior_1_id": warrior_id,
@@ -477,7 +478,8 @@ def saveGame():
         warriors_ref = ref.child('warriors')
         warrior_ref = warriors_ref.child(warrior_id)
         warrior_ref.update({'busy': True})
-    return jsonify({"message": "Game saved successfully"}), 200
+        return jsonify({"message": "Warrior is ready and is waiting for an opponent.\nYou will find his score in the history once the game ends"}), 200
+    
 
 @login_required
 def saveRound(round_number,game_id,cycles,warr_1_lives,warr_1_wins,warr_2_lives,warr_2_wins):

@@ -3,12 +3,17 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../../Header";
 import "./styles.css";
 import axios from "axios";
+import Popup from "../../Popup";
+
 
 const EditWarriorPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const warrior = location.state.warrior;
+  const [showPopup, setShowPopup] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
 
   useEffect(() => {
     setCode(warrior.code);
@@ -39,17 +44,20 @@ const EditWarriorPage = () => {
         code: code,
         user_id: user_id,
       });
-      if (!response.data) {
-        throw new Error("Failed to save warrior");
-      }
       navigate("/warriors");
     } catch (error) {
-      console.error("Error saving warrior:", error);
+      setPopupMessage(error.response.data.error);
+      setShowPopup(true);
+      setIsError(true);
     }
   };
 
   const handleCancel = () => {
     navigate("/warriors");
+  };
+
+  const handlePopupClose = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -80,6 +88,13 @@ const EditWarriorPage = () => {
           </button>
         </div>
       </div>
+      {showPopup && (
+        <Popup
+          isError={isError}
+          message={popupMessage}
+          onClose={handlePopupClose}
+        />
+      )}
     </div>
   );
 };
