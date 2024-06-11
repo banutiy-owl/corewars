@@ -5,7 +5,8 @@ import LoginPage from "./components/screens/auth/LoginPage/LoginPage";
 import WelcomePage from "./components/screens/WelcomePage/WelcomePage";
 import HomePage from "./components/screens/HomePage/HomePage";
 import WarriorsPage from "./components/screens/ListWarriorsPage/WarriorsPage";
-import AddEditWarriorPage from "./components/screens/AddEditWarriorPage/AddEditWarriorPage";
+import EditWarriorPage from "./components/screens/EditWarriorPage/EditWarriorPage";
+import AddWarriorPage from "./components/screens/AddWarriorPage/AddWarriorPage";
 import NewGamePage from "./components/screens/NewGamePage/NewGamePage";
 import HistoryPage from "./components/screens/HistoryPage/HistoryPage";
 import GameReviewPage from "./components/screens/GameReviewPage/GameReviewPage";
@@ -19,7 +20,8 @@ function App() {
         <Route path="/register" element={<SignUpPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/warriors" element={<WarriorsPage />} />
-        <Route path="/warrior" element={<AddEditWarriorPage />} />
+        <Route path="/edit-warrior" element={<EditWarriorPage />} />
+        <Route path="/add-warrior" element={<AddWarriorPage />} />
         <Route path="/new-game" element={<NewGamePage />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/game-review" element={<GameReviewPage />} />

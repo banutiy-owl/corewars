@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "./Header";
+import Header from "../../Header";
 import "./styles.css";
 
-const AddEditWarriorPage = () => {
+const EditWarriorPage = (warrior) => {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
+
+  useEffect(() => {
+    setCode(warrior.code);
+  }, [warrior.code]);
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -24,6 +28,7 @@ const AddEditWarriorPage = () => {
 
   const handleSaveWarrior = () => {
     navigate("/warriors");
+    //zeby zapisac zmiany w kodzie?
   };
 
   const handleCancel = () => {
@@ -35,7 +40,7 @@ const AddEditWarriorPage = () => {
       <Header />
       <div className="editor-section">
         <div className="editor-header">
-          <span className="warrior-label">Warrior 1</span>
+          <span className="warrior-label">{warrior.name}</span>
           <input
             type="file"
             className="upload-btn"
@@ -43,7 +48,7 @@ const AddEditWarriorPage = () => {
           />
         </div>
         <textarea
-          spellcheck="false"
+          spellCheck="false"
           className="code-input"
           value={code}
           onChange={handleCodeChange}
@@ -62,4 +67,4 @@ const AddEditWarriorPage = () => {
   );
 };
 
-export default AddEditWarriorPage;
+export default EditWarriorPage;

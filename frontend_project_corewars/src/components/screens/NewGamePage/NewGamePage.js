@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "./Header";
+import Header from "../../Header";
+import Popup from "../../Popup";
 import WarriorsTickList from "./WarriorsTickList";
 import axios from "axios";
-
 
 import "./styles.css";
 
 const NewGamePage = () => {
   const [warriors, setWarriors] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+
   const navigate = useNavigate();
 
   const [selectedWarrior, setSelectedWarrior] = useState(null);
-
+  /*
   useEffect(() => {
     const fetchWarriors = async () => {
       try {
@@ -24,17 +28,30 @@ const NewGamePage = () => {
         setWarriors(response.data);
       } catch (error) {
         console.error("Error fetching warriors:", error);
+        setIsError(true);
+        setPopupMessage("Failed to fetch warriors. Please try again later.");
+        setShowPopup(true);
       }
     };
   fetchWarriors();
-});
+});*/
 
   const handleTick = (id) => {
     setSelectedWarrior(selectedWarrior === id ? null : id);
   };
 
   const handleStartNewGame = () => {
-    navigate("/game-review");
+    if (warriors.length === 0) {
+      setIsError(true);
+      setPopupMessage("You need to have at least one warrior to start a game.");
+      setShowPopup(true);
+    } else {
+      navigate("/game-review");
+    }
+  };
+
+  const handlePopupClose = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -47,9 +64,20 @@ const NewGamePage = () => {
         selectedWarrior={selectedWarrior}
         onTick={handleTick}
       />
-      <button className="new-game-btn" onClick={handleStartNewGame}>
+      <button
+        className="new-game-btn"
+        onClick={handleStartNewGame}
+        disabled={warriors.length === 0}
+      >
         Go
       </button>
+      {showPopup && (
+        <Popup
+          isError={isError}
+          message={popupMessage}
+          onClose={handlePopupClose}
+        />
+      )}
     </div>
   );
 };
