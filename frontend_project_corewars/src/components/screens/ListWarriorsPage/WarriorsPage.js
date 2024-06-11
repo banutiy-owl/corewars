@@ -16,7 +16,7 @@ const WarriorsPage = () => {
 
   const navigate = useNavigate();
 
-  /* useEffect(() => {
+  useEffect(() => {
     const fetchWarriors = async () => {
       try {
         const user_id = localStorage.getItem("user_id");
@@ -38,30 +38,36 @@ const WarriorsPage = () => {
     };
   fetchWarriors();
 }, []);
-*/
 
 
   const handleAddWarriorClick = () => {
     navigate("/add-warrior");
   };
 
-  const handleEditWarrior = () => {
-    navigate("/edit-warrior");
+  const handleEditWarrior = (warrior) => {
+    navigate(`/edit-warrior`, {state: {warrior: warrior}});
   };
 
-  const handleDeleteWarrior = () => {
+  /*const handleDeleteWarrior = () => {
     setPopupMessage("Warrior deleted successfully.");
     setShowPopup(true);
     setIsError(false);
-  };
+  };*/
 
-  /*const handleDeleteWarrior = async (warriorId) => {
+  const handleDeleteWarrior = async (warriorId) => {
     try {
       await axios.delete(`http://127.0.0.1:5000/warrior/${warriorId}`);
-      window.location.reload();
+      navigate('/warriors');
+      setPopupMessage("Warrior deleted successfully.");
+      setShowPopup(true);
+      setIsError(false);
+      setTimeout(() => window.location.reload(), 2000);
     } catch (error) {
-      console.error("Error deleting warrior:", error);
-    }*/
+      setPopupMessage("Error deleting warrior:", error);
+      setShowPopup(true);
+      setIsError(true);
+    }
+  };
   const handlePopupClose = () => {
     setShowPopup(false);
   };
