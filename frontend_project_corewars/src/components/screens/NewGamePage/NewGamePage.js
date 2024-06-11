@@ -24,7 +24,11 @@ const NewGamePage = () => {
         if (!user_id) {
           navigate("/");
         }
-        const response = await axios.get(`/get_warriors?user_id=${user_id}`);
+        const response = await axios.get('http://127.0.0.1:5000/get_warriors', {
+          params: {
+            user_id : user_id
+          }
+        });
         setWarriors(response.data);
       } catch (error) {
         console.error("Error fetching warriors:", error);
@@ -34,12 +38,22 @@ const NewGamePage = () => {
       }
     };
   fetchWarriors();
-});*/
+}, []);*/
 
   const handleTick = (id) => {
     setSelectedWarrior(selectedWarrior === id ? null : id);
   };
 
+  /*const handleStartNewGame = async () => {
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/new_game', {
+        warrior_id: selectedWarrior
+      });
+      console.log(response.data);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error starting new game:", error);
+    }*/
   const handleStartNewGame = () => {
     if (warriors.length === 0) {
       setIsError(true);

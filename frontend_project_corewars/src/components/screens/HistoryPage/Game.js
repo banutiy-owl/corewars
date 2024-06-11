@@ -6,12 +6,12 @@ const Game = ({ game, onShow }) => (
     <div className="stats">
       <p>
         <div className="wl_block">
-          <span className="label1">Warrior 1:</span>
-          <span className="win_warrior1">{game.warrior1_wins} wins</span> <br />
+          <span className="label1">{game.warrior_1_name}</span>
+          <span className="win_warrior1">{game.warrior_1_wins} wins</span> <br />
         </div>
         <div className="wl_block">
-          <span className="label2">Warrior 2:</span>
-          <span className="win_warrior2">{game.warrior2_wins} wins</span>
+          <span className="label2">{game.warrior_2_name}</span>
+          <span className="win_warrior2">{game.warrior_2_wins} wins</span>
         </div>
       </p>
     </div>
