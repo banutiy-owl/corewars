@@ -329,6 +329,13 @@ def getWarrior(warrior_id):
                       warrior_data.get('won'),warrior_data.get('lost'),warrior_data.get('busy'))
     return warrior
 
+@app.route('/getWarriorInfo', methods=['GET'])
+def save_warrior():
+    request_data = request.json
+    warrior_id = request_data['warrior_id']
+    response = getWarrior(warrior_id)
+    return jsonify(response),200
+
 # ----------- GAMES ------------
 @app.route("/get_games", methods=['GET'])
 def getGamesList():
@@ -480,7 +487,15 @@ def getGame(game_id):
         "warrior_2_code": warrior_2_code,
         "warrior_2_wins": warrior_2_wins
     }
-    return jsonify(response_full), 200
+    return response_full
+
+@app.route('/getGameInfo', methods=['GET'])
+def getGameInfo():
+    request_data = request.json
+    game_id = request_data['game_id']
+    response = getGame(game_id)
+    return jsonify(response), 200
+
 @login_required
 def saveRound(round_number,game_id,cycles,warr_1_lives,warr_1_wins,warr_2_lives,warr_2_wins):
     round_data = {
