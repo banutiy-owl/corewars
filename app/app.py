@@ -1,6 +1,6 @@
 import firebase_admin
 from firebase_admin import credentials, db, storage
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, json
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_cors import CORS
 import secrets
@@ -320,21 +320,29 @@ def getWarriorsList():
 def saveWarrior(warrior):
     warrior.saveToDB(ref)
 
-
-@login_required
+#@login_required
 def getWarrior(warrior_id):
     warrior_ref = ref.child('warriors')
     warrior_data = warrior_ref.child(warrior_id)
-    warrior = Warrior(warrior_data.get('user_id'),warrior_id,warrior_data.get('name'),warrior_data.get('code'),
-                      warrior_data.get('won'),warrior_data.get('lost'),warrior_data.get('busy'))
+    warrior = Warrior(warrior_id,warrior_data.child('user_id').get(),warrior_data.child('name').get(),
+                      warrior_data.child('code').get(), warrior_data.child('won').get(),
+                      warrior_data.child('lost').get(),warrior_data.child('busy').get())
     return warrior
 
-@app.route('/getWarriorInfo', methods=['GET'])
-def save_warrior():
+@app.route('/getWInfo', methods=['GET'])
+def getWarriorInfo():
     request_data = request.json
     warrior_id = request_data['warrior_id']
     response = getWarrior(warrior_id)
-    return jsonify(response),200
+    response1 = {
+        "user_id":response.user_id,
+        "name":response.name,
+        "code":response.code,
+        "won":response.won,
+        "lost":response.lost,
+        "busy":response.busy
+    }
+    return jsonify(response1),200
 
 # ----------- GAMES ------------
 @app.route("/get_games", methods=['GET'])
