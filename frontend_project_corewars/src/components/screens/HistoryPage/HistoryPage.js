@@ -17,7 +17,11 @@ const HistoryPage = () => {
         if (!user_id) {
           navigate('/');
         }
-        const response = await axios.get(`/get_games?user_id=${user_id}`);
+        const response = await axios.get('http://127.0.0.1:5000/get_games', {
+          params: {
+            user_id : user_id
+          }
+        }, []);
         setGames(response.data);
       } catch (error) {
         console.error("Error fetching games:", error);
@@ -25,7 +29,7 @@ const HistoryPage = () => {
     };
 
     fetchGames();
-  });*/
+  }, []);*/
 
   const handleShowGame = () => {
     navigate("/game-review");

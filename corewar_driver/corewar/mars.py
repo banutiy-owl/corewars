@@ -69,6 +69,7 @@ class MARS(object):
                 warrior_position += randint(0, max(0, math.floor(space) -
                                                    len(warrior) -
                                                    self.minimum_separation))
+                #print(warrior_position)
 
             # add first and unique warrior task
             warrior.task_queue = [self.core.trim(warrior_position + warrior.start)]

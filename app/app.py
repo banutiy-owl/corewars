@@ -18,7 +18,7 @@ import os
 file_path = os.path.abspath('app\corewars-48cd2-firebase-adminsdk-tyekb-3eddbce5b0.json')
 cred = credentials.Certificate(file_path)
 databaseURL = 'https://corewars-48cd2-default-rtdb.europe-west1.firebasedatabase.app/'
-storageBucket = 'gs://corewars-48cd2.appspot.com/games_files'
+storageBucket = 'corewars-48cd2.appspot.com'
 firebase_admin.initialize_app(cred,{
 	'databaseURL': databaseURL,
     'storageBucket': storageBucket
@@ -230,63 +230,56 @@ def hello():
 
 # ----------- WARRIORS ------------
 @app.route('/warriors', methods=['POST'])
-@login_required
 def save_warrior():
-    if 'file' in request.files:
-        file = request.files['file']
-        if file:
-            with open(file, "r") as f:
-                text = f.readlines()            
-    elif 'code' in request.form:
-        text = request.form['code']
-    else:
-        return jsonify({"error": "File or text code are required"}), 400
-    
+    request_data = request.json
+    text = request_data['code']
+    user_id = request_data['user_id']
     try:
         DEFAULT_ENV = {'CORESIZE': 8000}
         warrior = parse(text.split('\n'), DEFAULT_ENV)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-    warrior = saveNewWarrior(warrior.name,text)
+    warrior = saveNewWarrior(warrior.name,text, user_id)
     return jsonify({"message": "Added warrior successfully", "name": warrior.name}), 200
 
-@login_required
-def saveNewWarrior(name,code):
+def saveNewWarrior(name,code, user_id):
     warrior_data = {
-        "user_id": current_user.id,
+        "user_id": user_id,
 		"name": name,
         "code": code,
 		"won": 0,
 		"lost": 0,
-        "busy": False
+        "busy": False,
+        "current": True
 	}
     new_warrior = ref.child('warriors').push(warrior_data)
     warrior_id = new_warrior.key
-    warrior = Warrior(warrior_id,current_user.id,name,code)
+    warrior = Warrior(warrior_id,user_id,name,code)
 
     return warrior
 
-@login_required
-def saveEditWarrior(warrior):
-    warrior_data = {
-        "user_id": warrior.warrior_id,
-		"name": warrior.name,
-        "code": warrior.code,
-		"won": warrior.won,
-		"lost": warrior.lost,
-        "busy": warrior.busy
-	}
-    warrior_ref = ref.child('warriors').child(warrior.warrior_id)
-    warrior_ref.update(warrior_data)
+@app.route("/warrior/<warrior_id>", methods=['PUT'])
+def saveEditWarrior(warrior_id):
+    request_data = request.json
+    text = request_data['code']
+    user_id = request_data['user_id']
+    try:
+        DEFAULT_ENV = {'CORESIZE': 8000}
+        warrior = parse(text.split('\n'), DEFAULT_ENV)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    warrior = saveNewWarrior(warrior.name,text, user_id)
+    ref.child('warriors').child(warrior_id).update({'current': False})
+    return jsonify({"message": "Edited warrior successfully", "name": warrior.name}), 200
 
 
-@app.route("/delete_warrior", methods=['DELETE'])
+@app.route("/warrior/<warrior_id>", methods=['DELETE'])
 def deleteWarrior(warrior_id):
-    warrior = getWarrior(warrior_id)
-    if warrior.warrior_id == current_user.id:
-        warrior_ref = ref.child('warriors').child(warrior_id)
-        warrior_ref.delete()
+    warrior_ref = ref.child('warriors').child(warrior_id)
+    warrior_ref.update({'current': False})
+    return jsonify({"message": "Warrior deleted successfully"}), 200
 
 
 @app.route("/get_warriors", methods=['GET'])
@@ -303,13 +296,23 @@ def getWarriorsList():
 
         for warrior_id in warriors_id:
             warrior_data = results[i]
-            name = warrior_data.get('name')
-            won = warrior_data.get('won')
-            lost = warrior_data.get('lost')
-            busy = warrior_data.get('busy')
-            data = [warrior_id, name, won, lost, busy]
-            warriors_list.append(data)
+            if warrior_data.get('current') == True:
+                name = warrior_data.get('name')
+                won = warrior_data.get('won')
+                lost = warrior_data.get('lost')
+                busy = warrior_data.get('busy')
+                code = warrior_data.get('code')
+                data = {
+                    "id":warrior_id, 
+                    "name": name, 
+                    "won": won, 
+                    "lost":lost,
+                    "busy": busy,
+                    "code" : code
+                }
+                warriors_list.append(data)
             i += 1
+    warriors_list.reverse()
     return jsonify(warriors_list), 200
  
 
@@ -340,13 +343,13 @@ def getGamesList():
 
     for warrior_id in warriors_ids:
         query = games_ref.order_by_child('warrior_1_id').equal_to(warrior_id).get()
-        games_list.extend(list(query.values()))
+        games_list.extend(query.items())
 
         query = games_ref.order_by_child('warrior_2_id').equal_to(warrior_id).get()
-        games_list.extend(list(query.values()))
+        games_list.extend(query.items())
 
     response = []
-    for game_data in games_list:
+    for i, (game_id, game_data) in enumerate(games_list):
         warrior_1_id = game_data.get('warrior_1_id')
         warrior_2_id = game_data.get('warrior_2_id')
 
@@ -360,7 +363,8 @@ def getGamesList():
         warrior_2_wins = game_data.get('warrior_2_wins')
 
         game_info = {
-            "game_id": game_data.key(),
+            "game_id": game_id,
+            "name": f"Game {i}",
             "warrior_1_name": warrior_1_name,
             "warrior_2_name": warrior_2_name,
             "warrior_1_wins": warrior_1_wins,
@@ -371,10 +375,12 @@ def getGamesList():
     return jsonify(response), 200
 
 
-
-def saveGame(warrior_id):
+@app.route("/new_game", methods=['POST'])
+def saveGame():
+    request_data = request.json
+    warrior_id = request_data['warrior_id']
     games_ref = ref.child('games')
-    waiting_games = games_ref.order_by_child('warior_2_id').equal_to('').get()
+    waiting_games = games_ref.order_by_child('warrior_2_id').equal_to('').get()
     waiting_games_list = list(waiting_games.items())
     if waiting_games_list:
         found_game = waiting_games_list[0]
@@ -382,36 +388,36 @@ def saveGame(warrior_id):
         warrior_1_id = found_game[1].get('warrior_1_id','')
         warrior_2_id = warrior_id
         warrior_ref = ref.child('warriors')
-        warrior_1_code = warrior_ref.child(warrior_1_id).get('code')
-        warrior_2_code = warrior_ref.child(warrior_2_id).get('code')
+        warrior_1_code = warrior_ref.child(warrior_1_id).get().get('code')
+        warrior_2_code = warrior_ref.child(warrior_2_id).get().get('code')
         cycles, round_winner_id, wins, core_states, exceptions = game(warrior_1_id, warrior_1_code, warrior_2_id, warrior_2_code)
         if wins[warrior_1_id] > wins[warrior_2_id]:
             #warrior_1 and it's user update
-            warrior_1_wins = warrior_ref.child(warrior_1_id).get('won')
+            warrior_1_wins = warrior_ref.child(warrior_1_id).get().get('won')
             warrior_ref.child(warrior_1_id).update({'won': warrior_1_wins + 1})
-            warrior_1_user_id = warrior_ref.child(warrior_1_id).get('user_id')
+            warrior_1_user_id = warrior_ref.child(warrior_1_id).get().get('user_id')
             user_ref = ref.child('users').child(warrior_1_user_id)
             user_won = user_ref.child('won').get()
             user_ref.update({'won': user_won + 1})
             
             #warrior_2 and it's user update
-            warrior_2_lost = warrior_ref.child(warrior_2_id).get('lost')
+            warrior_2_lost = warrior_ref.child(warrior_2_id).get().get('lost')
             warrior_ref.child(warrior_2_id).update({'lost': warrior_2_lost + 1})
-            warrior_2_user_id = warrior_ref.child(warrior_2_id).get('user_id')
+            warrior_2_user_id = warrior_ref.child(warrior_2_id).get().get('user_id')
             user_ref = ref.child('users').child(warrior_2_user_id)
             user_lost = user_ref.child('lost').get()
             user_ref.update({'lost': user_lost + 1})
         elif wins[warrior_1_id] < wins[warrior_2_id]:
-            warrior_2_wins = warrior_ref.child(warrior_2_id).get('won')
+            warrior_2_wins = warrior_ref.child(warrior_2_id).get().get('won')
             warrior_ref.child(warrior_2_id).update({'won': warrior_2_wins + 1})
-            warrior_2_user_id = warrior_ref.child(warrior_2_id).get('user_id')
+            warrior_2_user_id = warrior_ref.child(warrior_2_id).get().get('user_id')
             user_ref = ref.child('users').child(warrior_2_user_id)
             user_won = user_ref.child('won').get()
             user_ref.update({'won': user_won + 1})
 
-            warrior_1_lost = warrior_ref.child(warrior_1_id).get('lost')
+            warrior_1_lost = warrior_ref.child(warrior_1_id).get().get('lost')
             warrior_ref.child(warrior_1_id).update({'lost': warrior_1_lost + 1})
-            warrior_1_user_id = warrior_ref.child(warrior_1_id).get('user_id')
+            warrior_1_user_id = warrior_ref.child(warrior_1_id).get().get('user_id')
             user_ref = ref.child('users').child(warrior_1_user_id)
             user_lost = user_ref.child('lost').get()
             user_ref.update({'lost': user_lost + 1})
@@ -431,11 +437,11 @@ def saveGame(warrior_id):
                 "error": exceptions[r]
             }
             ref.child('rounds').push(round_data)
-        filepath = "/games/" + game_id + ".txt"
-        blob = bucket.blob(filepath)
-        blob.upload_from_string(core_states)
         warrior_ref.child(warrior_1_id).update({'busy': False})
         warrior_ref.child(warrior_2_id).update({'busy': False})
+        filepath = f"games_files/{game_id}.txt"
+        blob = bucket.blob(filepath)
+        blob.upload_from_string(core_states)
     else:
         game_data = {
             "warrior_1_id": warrior_id,
@@ -443,9 +449,11 @@ def saveGame(warrior_id):
             "warrior_1_wins": '',
             "warrior_2_wins": ''
         }
+        games_ref.push(game_data)
         warriors_ref = ref.child('warriors')
         warrior_ref = warriors_ref.child(warrior_id)
         warrior_ref.update({'busy': True})
+    return jsonify({"message": "Game saved successfully"}), 200
 
 @login_required
 def saveRound(round_number,game_id,cycles,warr_1_lives,warr_1_wins,warr_2_lives,warr_2_wins):
