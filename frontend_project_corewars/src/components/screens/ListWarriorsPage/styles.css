@@ -1,58 +1,4 @@
-.body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    background-color: #1a1a1a;
-    font-family: 'Courier New', Courier, monospace;
-    color: white;
-    width: 50%;       /* Set the same width as .warrior-editor */
-    margin: 0 auto;
-  }
-  
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #333;
-    padding: 10px;
-    border-bottom: 1px solid #444;
-  }
-  
-  header .left, header .right {
-    display: flex;
-  }
-  
-  header .header-btn {
-    margin-right: 10px;
-    text-decoration: none;
-    color: white;
-    background-color: #7a44cf; /* Set background color */
-    padding: 10px 15px; /* Increase padding */
-    border-radius: 5px; /* Add border radius */
-    font-size: 16px; /* Increase font size */
-    border: none; /* Remove default border */
-    cursor: pointer; /* Add pointer cursor */
-  }
 
-  header .header-btn-current {
-    margin-right: 10px;
-    text-decoration: none;
-    color: white;
-    background-color: #9f73e6; /* Set background color */
-    padding: 10px 15px; /* Increase padding */
-    border-radius: 5px; /* Add border radius */
-    font-size: 16px; /* Increase font size */
-    border: none; /* Remove default border */
-    cursor: pointer; /* Add pointer cursor */
-  }
-  
-  button:hover {
-    background-color: #6839b3;
-  }
-  
-  .title {
-    text-align: center;
-    margin: 20px 0;
-  }
   
   .add-warrior-btn {
     font-size: 16px;
@@ -63,7 +9,7 @@
     color: white;
     border: none;
     cursor: pointer;
-    border-radius: 5px; /* Add border radius */
+    border-radius: 5px;
   }
   
   .warrior-list {
@@ -131,14 +77,14 @@
 
   
 .warrior-block button:disabled {
-    background-color: #999; /* Gray color for disabled buttons */
-    cursor: not-allowed; /* Change cursor to indicate disabled state */
+    background-color: #999; 
+    cursor: not-allowed; 
   }
 
   
   .won,.lost {
     padding: 10px;
-    margin-top: 5px; /* Add space between won and lost */
+    margin-top: 5px; 
     font-size: 18px;
   }
 

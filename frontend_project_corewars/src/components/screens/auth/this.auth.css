@@ -51,11 +51,11 @@
     border-radius: 5px;
     margin: 0 auto;
     width: 70%;
-    background-color: #2d282e;/* Match background color */
+    background-color: #2d282e;
 }
 
 .input img {
-    margin: 0 15px; /* Adjust margin for consistency */
+    margin: 0 15px; 
 }
 
 .input input {
@@ -89,10 +89,10 @@
   }
   
   .have-account {
-    text-align: center; /* Center the text */
+    text-align: center; 
     color: #e4e4e4;
     font-size: 19px;
-    margin: 15px auto; /* Add margin for spacing */
+    margin: 15px auto; 
 }
 
 .link{
