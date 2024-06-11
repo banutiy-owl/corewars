@@ -38,7 +38,7 @@ const AddWarriorPage = () => {
       }
       navigate("/warriors");
     } catch (error) {
-      console.error("Error saving warrior:", error);
+      console.error("Error saving warrior:", error.response.data.error);
     }
   };
 
