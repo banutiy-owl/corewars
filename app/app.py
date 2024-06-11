@@ -264,23 +264,47 @@ def saveEditWarrior(warrior_id):
     request_data = request.json
     text = request_data['code']
     user_id = request_data['user_id']
+
+    warrior_ref = ref.child('warriors').child(warrior_id)
+    warrior_data = warrior_ref.get()
+    if warrior_data.get('busy') == True:
+        return jsonify({"error": "Warrior is busy"}), 400
+    
+    games_ref = ref.child('games')
+    games_with_warrior_1 = games_ref.order_by_child('warrior_1_id').equal_to(warrior_id).get()
+    games_with_warrior_2 = games_ref.order_by_child('warrior_2_id').equal_to(warrior_id).get()
+
     try:
         DEFAULT_ENV = {'CORESIZE': 8000}
         warrior = parse(text.split('\n'), DEFAULT_ENV)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-
-    warrior = saveNewWarrior(warrior.name,text, user_id)
-    ref.child('warriors').child(warrior_id).update({'current': False})
-    return jsonify({"message": "Edited warrior successfully", "name": warrior.name}), 200
+    if games_with_warrior_1 or games_with_warrior_2:
+        warrior = saveNewWarrior(warrior.name,text, user_id)
+        warrior_ref.update({'current': False})
+        return jsonify({"message": "Edited warrior successfully", "name": warrior.name}), 200
+    else:
+        warrior_ref.update({'name': warrior.name, 'code': text})
+        return jsonify({"message": "Edited warrior successfully", "name": warrior.name}), 200
 
 
 @app.route("/warrior/<warrior_id>", methods=['DELETE'])
 def deleteWarrior(warrior_id):
     warrior_ref = ref.child('warriors').child(warrior_id)
-    warrior_ref.update({'current': False})
-    return jsonify({"message": "Warrior deleted successfully"}), 200
+    warrior_data = warrior_ref.get()
+    if warrior_data.get('busy') == True:
+        return jsonify({"error": "Warrior is busy"}), 400
+    
+    games_ref = ref.child('games')
+    games_with_warrior_1 = games_ref.order_by_child('warrior_1_id').equal_to(warrior_id).get()
+    games_with_warrior_2 = games_ref.order_by_child('warrior_2_id').equal_to(warrior_id).get()
 
+    if games_with_warrior_1 or games_with_warrior_2:
+        warrior_ref.update({'current': False})
+        return jsonify({"message": "Warrior deleted successfully"}), 200
+    else: 
+        warrior_ref.delete()
+        return jsonify({"message": "Warrior deleted successfully"}), 200
 
 @app.route("/get_warriors", methods=['GET'])
 def getWarriorsList():
@@ -449,6 +473,7 @@ def saveGame():
         filepath = f"games_files/{game_id}.txt"
         blob = bucket.blob(filepath)
         blob.upload_from_string(core_states)
+        return jsonify({"message": "The opponent was already waiting...\nYou can find results of the game in the history"}), 200
     else:
         game_data = {
             "warrior_1_id": warrior_id,
@@ -460,7 +485,8 @@ def saveGame():
         warriors_ref = ref.child('warriors')
         warrior_ref = warriors_ref.child(warrior_id)
         warrior_ref.update({'busy': True})
-    return jsonify({"message": "Game saved successfully"}), 200
+        return jsonify({"message": "Warrior is ready and is waiting for an opponent.\nYou will find his score in the history once the game ends"}), 200
+    
 
 @login_required
 def getGame(game_id):
