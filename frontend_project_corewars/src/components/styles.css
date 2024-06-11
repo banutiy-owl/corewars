@@ -1,0 +1,99 @@
+.body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #1a1a1a;
+  font-family: 'Courier New', Courier, monospace;
+  color: white;
+  width: 50%;      
+  margin: 0 auto;
+}
+
+
+button:hover {
+  background-color: #6839b3;
+}
+
+.title {
+  text-align: center;
+  margin: 50px 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px;
+    border-bottom: 1px solid #444;
+  }
+  
+  header .left, header .right {
+    display: flex;
+  }
+  
+  header .header-btn {
+    margin-right: 10px;
+    text-decoration: none;
+    color: white;
+    background-color: #7a44cf;
+    padding: 10px 15px; 
+    border-radius: 5px; 
+    font-size: 16px; 
+    border: none; 
+    cursor: pointer; 
+  }
+
+  header .header-btn-current {
+    margin-right: 10px;
+    text-decoration: none;
+    color: white;
+    background-color: #9f73e6; 
+    padding: 10px 15px; 
+    border-radius: 5px; 
+    font-size: 16px; 
+    border: none; 
+    cursor: pointer; 
+  }
+
+  
+.yet{
+  text-align: center;
+  font-size: 18px;
+}
+
+.popup-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00000080; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup {
+  background-color: #6931c5; 
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #00000080; 
+  max-width: 80%;
+  text-align: center;
+  color: white;
+}
+
+.popup-button {
+  background-color: #ffffff; 
+  color: #7a44cf;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.popup-button:hover{
+  background-color: #420e95; 
+  color: #ffffff;
+}

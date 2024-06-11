@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "./Header";
-import WarriorList from "./WarriorList";
 import axios from "axios";
 
-import "./styles.list.css";
+import Header from "../../Header";
+import Popup from "../../Popup";
+import WarriorList from "./WarriorList";
+
+import "./styles.css";
 
 const WarriorsPage = () => {
   const [warriors, setWarriors] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+
   const navigate = useNavigate();
 
-  useEffect(() => {
+  /* useEffect(() => {
     const fetchWarriors = async () => {
       try {
         const user_id = localStorage.getItem("user_id");
@@ -25,27 +31,39 @@ const WarriorsPage = () => {
         setWarriors(response.data);
       } catch (error) {
         console.error("Error fetching warriors:", error);
+        setPopupMessage("Failed to fetch warriors. Please try again later.");
+        setShowPopup(true);
+        setIsError(true);
       }
     };
   fetchWarriors();
 }, []);
+*/
+
 
   const handleAddWarriorClick = () => {
-    navigate("/warrior");
+    navigate("/add-warrior");
   };
 
   const handleEditWarrior = () => {
-    navigate("/warrior");
+    navigate("/edit-warrior");
   };
 
+  const handleDeleteWarrior = () => {
+    setPopupMessage("Warrior deleted successfully.");
+    setShowPopup(true);
+    setIsError(false);
+  };
 
-  const handleDeleteWarrior = async (warriorId) => {
+  /*const handleDeleteWarrior = async (warriorId) => {
     try {
       await axios.delete(`http://127.0.0.1:5000/warrior/${warriorId}`);
       window.location.reload();
     } catch (error) {
       console.error("Error deleting warrior:", error);
-    }
+    }*/
+  const handlePopupClose = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -60,6 +78,13 @@ const WarriorsPage = () => {
         onEdit={handleEditWarrior}
         onDelete={handleDeleteWarrior}
       />
+      {showPopup && (
+        <Popup
+          isError={isError}
+          message={popupMessage}
+          onClose={handlePopupClose}
+        />
+      )}
     </div>
   );
 };

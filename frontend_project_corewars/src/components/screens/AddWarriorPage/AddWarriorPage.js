@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "./Header";
+import Header from "../../Header";
 import "./styles.css";
 import axios from "axios";
 
-const AddEditWarriorPage = () => {
+const AddWarriorPage = () => {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
 
@@ -59,7 +59,7 @@ const AddEditWarriorPage = () => {
           />
         </div>
         <textarea
-          spellcheck="false"
+          spellCheck="false"
           className="code-input"
           value={code}
           onChange={handleCodeChange}
@@ -78,4 +78,4 @@ const AddEditWarriorPage = () => {
   );
 };
 
-export default AddEditWarriorPage;
+export default AddWarriorPage;
