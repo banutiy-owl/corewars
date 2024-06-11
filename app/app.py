@@ -250,7 +250,8 @@ def saveNewWarrior(name,code, user_id):
         "code": code,
 		"won": 0,
 		"lost": 0,
-        "busy": False
+        "busy": False,
+        "current": True
 	}
     new_warrior = ref.child('warriors').push(warrior_data)
     warrior_id = new_warrior.key
@@ -258,24 +259,26 @@ def saveNewWarrior(name,code, user_id):
 
     return warrior
 
-@login_required
-def saveEditWarrior(warrior):
-    warrior_data = {
-        "user_id": warrior.warrior_id,
-		"name": warrior.name,
-        "code": warrior.code,
-		"won": warrior.won,
-		"lost": warrior.lost,
-        "busy": warrior.busy
-	}
-    warrior_ref = ref.child('warriors').child(warrior.warrior_id)
-    warrior_ref.update(warrior_data)
+@app.route("/warrior/<warrior_id>", methods=['PUT'])
+def saveEditWarrior(warrior_id):
+    request_data = request.json
+    text = request_data['code']
+    user_id = request_data['user_id']
+    try:
+        DEFAULT_ENV = {'CORESIZE': 8000}
+        warrior = parse(text.split('\n'), DEFAULT_ENV)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    warrior = saveNewWarrior(warrior.name,text, user_id)
+    ref.child('warriors').child(warrior_id).update({'current': False})
+    return jsonify({"message": "Edited warrior successfully", "name": warrior.name}), 200
 
 
 @app.route("/warrior/<warrior_id>", methods=['DELETE'])
 def deleteWarrior(warrior_id):
     warrior_ref = ref.child('warriors').child(warrior_id)
-    warrior_ref.delete()
+    warrior_ref.update({'current': False})
     return jsonify({"message": "Warrior deleted successfully"}), 200
 
 
@@ -293,20 +296,21 @@ def getWarriorsList():
 
         for warrior_id in warriors_id:
             warrior_data = results[i]
-            name = warrior_data.get('name')
-            won = warrior_data.get('won')
-            lost = warrior_data.get('lost')
-            busy = warrior_data.get('busy')
-            code = warrior_data.get('code')
-            data = {
-                "id":warrior_id, 
-                "name": name, 
-                "won": won, 
-                "lost":lost,
-                "busy": busy,
-                "code" : code
-            }
-            warriors_list.append(data)
+            if warrior_data.get('current') == True:
+                name = warrior_data.get('name')
+                won = warrior_data.get('won')
+                lost = warrior_data.get('lost')
+                busy = warrior_data.get('busy')
+                code = warrior_data.get('code')
+                data = {
+                    "id":warrior_id, 
+                    "name": name, 
+                    "won": won, 
+                    "lost":lost,
+                    "busy": busy,
+                    "code" : code
+                }
+                warriors_list.append(data)
             i += 1
     warriors_list.reverse()
     return jsonify(warriors_list), 200
