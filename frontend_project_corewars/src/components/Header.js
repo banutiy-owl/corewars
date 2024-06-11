@@ -26,6 +26,7 @@ const Header = () => {
 
   const handleLogOut = () => {
     navigate("/");
+    localStorage.clear();
   };
 
   const getButtonClass = (path) => {
