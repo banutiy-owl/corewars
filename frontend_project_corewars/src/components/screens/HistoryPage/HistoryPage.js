@@ -56,8 +56,8 @@ const HistoryPage = () => {
     fetchData();
   }, [navigate]);
 
-  const handleShowGame = () => {
-    navigate("/game-review");
+  const handleShowGame = (game) => {
+    navigate("/game-review", {state: {game_id: game.id}});
   };
 
   /*const gamesWon = games.filter((game) => game.result === "won").length;
