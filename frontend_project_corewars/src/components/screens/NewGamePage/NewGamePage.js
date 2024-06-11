@@ -12,11 +12,12 @@ const NewGamePage = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isError, setIsError] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
   const [selectedWarrior, setSelectedWarrior] = useState(null);
-  /*
+  
   useEffect(() => {
     const fetchWarriors = async () => {
       try {
@@ -37,24 +38,32 @@ const NewGamePage = () => {
         setShowPopup(true);
       }
     };
-  fetchWarriors();
-}, []);*/
+    const fetchData = async () => {
+      fetchWarriors();
+      setLoading(false);
+    };
+    fetchData();
+}, [navigate]);
 
   const handleTick = (id) => {
     setSelectedWarrior(selectedWarrior === id ? null : id);
   };
 
-  /*const handleStartNewGame = async () => {
+  const handleStartNewGame = async () => {
     try {
       const response = await axios.post('http://127.0.0.1:5000/new_game', {
         warrior_id: selectedWarrior
       });
-      console.log(response.data);
-      window.location.reload();
+      setPopupMessage(response.data.message);
+      setShowPopup(true);
+      setIsError(true);
     } catch (error) {
-      console.error("Error starting new game:", error);
-    }*/
-  const handleStartNewGame = () => {
+      setPopupMessage(`Error starting new game: ${error.response.data.error}`);
+      setShowPopup(true);
+      setIsError(true);
+    }
+  };
+  /*const handleStartNewGame = () => {
     if (warriors.length === 0) {
       setIsError(true);
       setPopupMessage("You need to have at least one warrior to start a game.");
@@ -62,11 +71,22 @@ const NewGamePage = () => {
     } else {
       navigate("/game-review");
     }
-  };
+  };*/
 
   const handlePopupClose = () => {
     setShowPopup(false);
+    window.location.reload();
   };
+
+  if (loading) {
+    return (
+      <div className="body">
+        <Header />
+        <h1 className="title">Choose your warrior</h1>
+        <p className="loading">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="body">

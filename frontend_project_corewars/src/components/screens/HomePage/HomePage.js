@@ -2,21 +2,25 @@ import { React, useEffect, useState } from "react";
 
 import Header from "../../Header";
 import "./HomePage.css";
+import { useNavigate } from "react-router";
 
 function HomePage() {
+  const navigate = useNavigate();
   const [username, setusername] = useState("");
-  /* useEffect(() => {
+  useEffect(() => {
     const storedUsername = localStorage.getItem("username");
-    if (storedUsername) {
-      setusername(storedUsername);
-    }
-  }, []);*/
+    if (!storedUsername) {
+          navigate('/');
+          return;
+        }
+    setusername(storedUsername);
+  }, []);
   return (
     <div className="body home">
       <Header />
       <div className="header">
         <div className="user-text-welcome">
-          Welcome User
+          Welcome {username}
           <div className="underline"></div>
         </div>
       </div>
