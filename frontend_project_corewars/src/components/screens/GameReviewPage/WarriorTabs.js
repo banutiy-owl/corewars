@@ -6,6 +6,13 @@ function WarriorTabs({ currentWarrior, setCurrentWarrior, warriors }) {
     "Warrior 2": "Code for Warrior 2...",
   };*/
 
+  const getButtonStyle = (warrior) => {
+    if (currentWarrior === warrior) {
+      return warrior === "Warrior 1" ? { backgroundColor: "#f03838" } : { backgroundColor: "#4d27c9" };
+    }
+    return {};
+  };
+
   return (
     <div className="warrior-tabs">
       <div className="tab-buttons">
@@ -14,6 +21,7 @@ function WarriorTabs({ currentWarrior, setCurrentWarrior, warriors }) {
             key={warrior}
             className={currentWarrior === warrior ? "active" : ""}
             onClick={() => setCurrentWarrior(warrior)}
+            style={getButtonStyle(warrior)}
           >
             {warriors[warrior].name}
           </button>
