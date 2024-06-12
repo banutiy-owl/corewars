@@ -2,6 +2,11 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import "./styles.css";
+import homeIcon from './assets/home.png';
+import historyIcon from './assets/history-w.png';
+import newGameIcon from './assets/game.png';
+import warriorsIcon from './assets/warrior.png';
+import logoutIcon from './assets/logout.png';
 
 
 const Header = () => {
@@ -37,7 +42,7 @@ const Header = () => {
     <header>
       <div className="left">
         <button className={getButtonClass("/home")} onClick={handleHomeClick}>
-          Home
+        <img src={homeIcon} alt="Home" className="icon" /> Home
         </button>
       </div>
       <div className="right">
@@ -45,19 +50,19 @@ const Header = () => {
           className={getButtonClass("/warriors")}
           onClick={handleWarriorsClick}
         >
-          Warriors
+          <img src={warriorsIcon} alt="Warriors" className="icon" /> Warriors
         </button>
         <button className={getButtonClass("/new-game")} onClick={handleNewGame}>
-          New Game
+        <img src={newGameIcon} alt="New Game" className="icon" /> New Game
         </button>
         <button
           className={getButtonClass("/history")}
           onClick={handleHistoryClick}
         >
-          History
+          <img src={historyIcon} alt="History" className="icon" /> History
         </button>
         <button className="header-btn" onClick={handleLogOut}>
-          Logout
+        <img src={logoutIcon} alt="Logout" className="icon" /> Logout
         </button>
       </div>
     </header>
