@@ -389,6 +389,7 @@ def getGamesList():
             "warrior_2_wins": warrior_2_wins
         }
         response.append(game_info)
+    response.reverse()
 
     return jsonify(response), 200
 
