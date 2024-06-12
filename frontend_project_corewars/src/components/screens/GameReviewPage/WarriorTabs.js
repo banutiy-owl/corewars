@@ -1,11 +1,10 @@
 import React from "react";
 
-function WarriorTabs({ currentWarrior, setCurrentWarrior }) {
-  const warriorCode = {
-    "Warrior 1": "Code for Warrior 1...", // tutaj kod
-    "Warrior 2": "Code for Warrior 2...", //tutaj kod
-  };
-
+function WarriorTabs({ currentWarrior, setCurrentWarrior, warriors }) {
+  /*const warriorCode = {
+    "Warrior 1": "Code for Warrior 1...",
+    "Warrior 2": "Code for Warrior 2...",
+  };*/
 
   const getButtonStyle = (warrior) => {
     if (currentWarrior === warrior) {
@@ -17,19 +16,19 @@ function WarriorTabs({ currentWarrior, setCurrentWarrior }) {
   return (
     <div className="warrior-tabs">
       <div className="tab-buttons">
-        {Object.keys(warriorCode).map((warrior) => (
+        {Object.keys(warriors).map((warrior) => (
           <button
             key={warrior}
             className={currentWarrior === warrior ? "active" : ""}
             onClick={() => setCurrentWarrior(warrior)}
             style={getButtonStyle(warrior)}
           >
-            {warrior}
+            {warriors[warrior].name}
           </button>
         ))}
       </div>
       <div className="code-display">
-        <pre>{warriorCode[currentWarrior]}</pre>
+        <pre>{warriors[currentWarrior]?.code}</pre>
       </div>
     </div>
   );

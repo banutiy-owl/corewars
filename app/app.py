@@ -338,13 +338,7 @@ def getWarriorsList():
             i += 1
     warriors_list.reverse()
     return jsonify(warriors_list), 200
- 
 
-@login_required
-def saveWarrior(warrior):
-    warrior.saveToDB(ref)
-
-@login_required
 def getWarrior(warrior_id):
     warrior_ref = ref.child('warriors')
     warrior_data = warrior_ref.child(warrior_id)
@@ -367,7 +361,7 @@ def getWarriorInfo():
         "busy":response.busy
     }
     return jsonify(response1),200
-
+  
 # ----------- GAMES ------------
 @app.route("/get_games", methods=['GET'])
 def getGamesList():
@@ -402,7 +396,7 @@ def getGamesList():
         warrior_2_wins = game_data.get('warrior_2_wins')
 
         game_info = {
-            "game_id": game_id,
+            "id": game_id,
             "name": f"Game {i}",
             "warrior_1_name": warrior_1_name,
             "warrior_2_name": warrior_2_name,
@@ -410,6 +404,7 @@ def getGamesList():
             "warrior_2_wins": warrior_2_wins
         }
         response.append(game_info)
+    response.reverse()
 
     return jsonify(response), 200
 
@@ -495,39 +490,51 @@ def saveGame():
         warrior_ref.update({'busy': True})
         return jsonify({"message": "Warrior is ready and is waiting for an opponent.\nYou will find his score in the history once the game ends"}), 200
     
-
-@login_required
-def getGame(game_id):
+@app.route("/get_game", methods=['GET'])
+def get_game():
+    game_id = request.args.get('game_id')
     games_ref = ref.child('games')
+    rounds_ref = ref.child('rounds')
     games_data = games_ref.child(game_id)
-    warrior1 = games_data.child('warrior_1_id').get()
-    warrior2 = games_data.child('warrior_2_id').get()
-    warrior_1_wins = games_data.child('warrior_1_wins').get()
-    warrior_2_wins = games_data.child('warrior_2_wins').get()
+    warrior1 = games_data.get().get('warrior_1_id')
+    warrior2 = games_data.get().get('warrior_2_id')
+    warrior_1_wins = games_data.get().get('warrior_1_wins')
+    warrior_2_wins = games_data.get().get('warrior_2_wins')
     warrior_1_data = getWarrior(warrior1)
     warrior_2_data = getWarrior(warrior2)
-    warrior_1_name = warrior_1_data.name
-    warrior_2_name = warrior_2_data.name
-    warrior_1_code = warrior_1_data.code
-    warrior_2_code = warrior_2_data.code
+
+    rounds_data = rounds_ref.order_by_child('game_id').equal_to(game_id).get()
+    rounds = [
+        {
+            "round_number": round.get('round_number')+1,
+            "cycles": round.get('cycles'),
+            "winner": round.get('winner'),
+            "error": round.get('error'),
+        }
+        for round in rounds_data.values()
+    ]
+    blob = bucket.blob(f"games_files/{game_id}.txt")
+    grid_data = blob.download_as_string().decode('utf-8')
     response_full = {
-        "game_id": game_id,
+        "id": game_id,
         "warrior_1_id": warrior1,
-        "warrior_1_name": warrior_1_name,
-        "warrior_1_code": warrior_1_code,
+        "warrior_1_name": warrior_1_data.name,
+        "warrior_1_code": warrior_1_data.code,
         "warrior_1_wins": warrior_1_wins,
         "warrior_2_id": warrior2,
-        "warrior_2_name": warrior_2_name,
-        "warrior_2_code": warrior_2_code,
-        "warrior_2_wins": warrior_2_wins
+        "warrior_2_name": warrior_2_data.name,
+        "warrior_2_code": warrior_2_data.code,
+        "warrior_2_wins": warrior_2_wins,
+        "rounds": rounds,
+        "grid_data": grid_data
     }
-    return response_full
+    return jsonify(response_full), 200
 
 @app.route('/getGameInfo', methods=['GET'])
 def getGameInfo():
     request_data = request.json
     game_id = request_data['game_id']
-    response = getGame(game_id)
+    response = get_game(game_id)
     return jsonify(response), 200
 
 @login_required

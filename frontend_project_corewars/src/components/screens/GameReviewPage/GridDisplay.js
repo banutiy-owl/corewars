@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import myText from "./testfile1.txt";
 
-const Grid = ({ round }) => {
+const Grid = ({ round, gridData }) => {
   const [fileContent, setFileContent] = useState([]);
 
   useEffect(() => {
     const fetchFileContent = async () => {
       try {
-        const response = await fetch(myText);
-        const text = await response.text();
-        const lines = text.trim().split("\n");
+        if (!gridData) return;
+        //console.log("Grid data:", gridData);
+        const lines = gridData.trim().split("\n");
         const formattedLines = lines.map((line) => {
           return line
             .trim()
@@ -26,13 +26,13 @@ const Grid = ({ round }) => {
     };
 
     fetchFileContent();
-  }, []);
+  }, [gridData]);
 
   const getBackgroundColor = (value) => {
     switch (value) {
-      case 123:
+      case 1:
         return "#f03838";
-      case 321:
+      case 2:
         return "#4d27c9";
       default:
         return "#1a1a1a";
@@ -43,9 +43,9 @@ const Grid = ({ round }) => {
     switch (value) {
       case 0:
         return "#444";
-      case 123:
+      case 1:
         return "#f03838";
-      case 321:
+      case 2:
         return "#4d27c9";
       default:
         return "#000000";
