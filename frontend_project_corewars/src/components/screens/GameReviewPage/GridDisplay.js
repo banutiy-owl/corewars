@@ -33,7 +33,7 @@ const Grid = ({ round, gridData }) => {
       case 1:
         return "#f03838";
       case 2:
-        return "#7632cd";
+        return "#4d27c9";
       default:
         return "#1a1a1a";
     }
@@ -46,7 +46,7 @@ const Grid = ({ round, gridData }) => {
       case 1:
         return "#f03838";
       case 2:
-        return "#7632cd";
+        return "#4d27c9";
       default:
         return "#000000";
     }

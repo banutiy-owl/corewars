@@ -97,3 +97,44 @@ header {
   background-color: #420e95; 
   color: #ffffff;
 }
+
+.icon {
+  width: 20px;  
+  height: 20px; 
+  margin-right: 10px; 
+  vertical-align: middle; 
+}
+
+@media (max-width: 1200px) {
+  .header-btn {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .icon {
+    margin-right: 2px;
+    margin-bottom: 6px; 
+  }
+}
+
+@media only screen and (max-width: 910px) {
+  .header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .left, .right {
+    flex-direction: column;
+  }
+
+  .header-btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .icon {
+    margin-right: 5px;
+    margin-bottom: 5px; 
+  }
+}
