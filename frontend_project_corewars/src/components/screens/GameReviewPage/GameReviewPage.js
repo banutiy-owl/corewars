@@ -5,6 +5,7 @@ import Grid from "./GridDisplay";
 import "./styles.css";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import config from "../../../config";
 
 const GameReviewPage = () => {
   const location = useLocation();
@@ -21,7 +22,7 @@ const GameReviewPage = () => {
   useEffect(() => {
     const fetchGameData = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/get_game`, {
+        const response = await axios.get(config.getGameUrl(), {
           params: { game_id: game_id }
         });
         const gameData = response.data;

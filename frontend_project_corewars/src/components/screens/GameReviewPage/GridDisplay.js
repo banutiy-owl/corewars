@@ -8,7 +8,6 @@ const Grid = ({ round, gridData }) => {
     const fetchFileContent = async () => {
       try {
         if (!gridData) return;
-        //console.log("Grid data:", gridData);
         const lines = gridData.trim().split("\n");
         const formattedLines = lines.map((line) => {
           return line

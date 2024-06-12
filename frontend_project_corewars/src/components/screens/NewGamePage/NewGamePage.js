@@ -6,6 +6,7 @@ import WarriorsTickList from "./WarriorsTickList";
 import axios from "axios";
 
 import "./styles.css";
+import config from "../../../config";
 
 const NewGamePage = () => {
   const [warriors, setWarriors] = useState([]);
@@ -25,7 +26,7 @@ const NewGamePage = () => {
         if (!user_id) {
           navigate("/");
         }
-        const response = await axios.get('http://127.0.0.1:5000/get_warriors', {
+        const response = await axios.get(config.getWarriorsUrl(), {
           params: {
             user_id : user_id
           }
@@ -51,27 +52,20 @@ const NewGamePage = () => {
 
   const handleStartNewGame = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:5000/new_game', {
+      setIsError(false);
+      setPopupMessage("Loading...");
+      setShowPopup(true);
+      const response = await axios.post(config.getGameUrl(), {
         warrior_id: selectedWarrior
       });
-      setPopupMessage(response.data.message);
-      setShowPopup(true);
       setIsError(true);
+      setPopupMessage(response.data.message);
     } catch (error) {
       setPopupMessage(`Error starting new game: ${error.response.data.error}`);
       setShowPopup(true);
       setIsError(true);
     }
   };
-  /*const handleStartNewGame = () => {
-    if (warriors.length === 0) {
-      setIsError(true);
-      setPopupMessage("You need to have at least one warrior to start a game.");
-      setShowPopup(true);
-    } else {
-      navigate("/game-review");
-    }
-  };*/
 
   const handlePopupClose = () => {
     setShowPopup(false);

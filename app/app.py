@@ -306,7 +306,7 @@ def deleteWarrior(warrior_id):
         warrior_ref.delete()
         return jsonify({"message": "Warrior deleted successfully"}), 200
 
-@app.route("/get_warriors", methods=['GET'])
+@app.route("/warriors", methods=['GET'])
 def getWarriorsList():
     user_id = request.args.get('user_id')
     warriors_ref = ref.child('warriors')
@@ -363,7 +363,7 @@ def getWarriorInfo():
     return jsonify(response1),200
   
 # ----------- GAMES ------------
-@app.route("/get_games", methods=['GET'])
+@app.route("/games", methods=['GET'])
 def getGamesList():
     user_id = request.args.get('user_id')
 
@@ -409,7 +409,7 @@ def getGamesList():
     return jsonify(response), 200
 
 
-@app.route("/new_game", methods=['POST'])
+@app.route("/game", methods=['POST'])
 def saveGame():
     request_data = request.json
     warrior_id = request_data['warrior_id']
@@ -490,7 +490,7 @@ def saveGame():
         warrior_ref.update({'busy': True})
         return jsonify({"message": "Warrior is ready and is waiting for an opponent.\nYou will find his score in the history once the game ends"}), 200
     
-@app.route("/get_game", methods=['GET'])
+@app.route("/game", methods=['GET'])
 def get_game():
     game_id = request.args.get('game_id')
     games_ref = ref.child('games')

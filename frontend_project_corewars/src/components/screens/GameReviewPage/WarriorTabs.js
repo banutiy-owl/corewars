@@ -1,10 +1,6 @@
 import React from "react";
 
 function WarriorTabs({ currentWarrior, setCurrentWarrior, warriors }) {
-  /*const warriorCode = {
-    "Warrior 1": "Code for Warrior 1...",
-    "Warrior 2": "Code for Warrior 2...",
-  };*/
 
   const getButtonStyle = (warrior) => {
     if (currentWarrior === warrior) {

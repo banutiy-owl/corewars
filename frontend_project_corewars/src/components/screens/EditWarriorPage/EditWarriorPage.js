@@ -4,6 +4,7 @@ import Header from "../../Header";
 import "./styles.css";
 import axios from "axios";
 import Popup from "../../Popup";
+import config from "../../../config";
 
 
 const EditWarriorPage = () => {
@@ -40,7 +41,7 @@ const EditWarriorPage = () => {
         if (!user_id) {
           navigate("/");
         }
-      const response = await axios.put(`http://127.0.0.1:5000/warrior/${warrior.id}`, {
+      const response = await axios.put(`${config.getWarriorUrl()}/${warrior.id}`, {
         code: code,
         user_id: user_id,
       });

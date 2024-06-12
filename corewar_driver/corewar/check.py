@@ -1,4 +1,4 @@
-from corewar_driver.corewar.game import game1, game
+from corewar_driver.corewar.game import game
 
 dwarf = """
 ;name dwarf

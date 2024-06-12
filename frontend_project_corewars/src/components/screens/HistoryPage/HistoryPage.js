@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../Header";
 import GameList from "./GameList";
 import axios from "axios";
+import config from '../../../config';
 
 import "./styles.css";
 
@@ -21,7 +22,7 @@ const HistoryPage = () => {
           navigate('/');
           return;
         }
-        const response = await axios.get('http://127.0.0.1:5000/user_info', {
+        const response = await axios.get(config.getUserInfoUrl(), {
           params: {
             id: user_id
           }
@@ -38,7 +39,7 @@ const HistoryPage = () => {
         if (!user_id) {
           navigate('/');
         }
-        const response = await axios.get('http://127.0.0.1:5000/get_games', {
+        const response = await axios.get(config.getGamesUrl(), {
           params: {
             user_id : user_id
           }
@@ -60,8 +61,6 @@ const HistoryPage = () => {
     navigate("/game-review", {state: {game_id: game.id}});
   };
 
-  /*const gamesWon = games.filter((game) => game.result === "won").length;
-  const gamesLost = games.filter((game) => game.result === "lost").length;*/
   if (loading) {
     return (
       <div className="body">

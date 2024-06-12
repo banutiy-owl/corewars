@@ -1,8 +1,8 @@
 import React from "react";
 
-const Game = ({ game, onShow }) => (
+const Game = ({ game, onShow, game_number }) => (
   <div className="warrior-block">
-    <h2>{game.name}</h2>
+    <h2>Game {game_number}</h2>
     <div className="stats">
       <p>
         <div className="wl_block">

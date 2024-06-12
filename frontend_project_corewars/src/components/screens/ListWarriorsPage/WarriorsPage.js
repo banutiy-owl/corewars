@@ -7,6 +7,7 @@ import Popup from "../../Popup";
 import WarriorList from "./WarriorList";
 
 import "./styles.css";
+import config from "../../../config";
 
 const WarriorsPage = () => {
   const [warriors, setWarriors] = useState([]);
@@ -24,7 +25,7 @@ const WarriorsPage = () => {
         if (!user_id) {
           navigate("/");
         }
-        const response = await axios.get('http://127.0.0.1:5000/get_warriors', {
+        const response = await axios.get(config.getWarriorsUrl(), {
           params: {
             user_id : user_id
           }
@@ -53,15 +54,9 @@ const WarriorsPage = () => {
     navigate(`/edit-warrior`, {state: {warrior: warrior}});
   };
 
-  /*const handleDeleteWarrior = () => {
-    setPopupMessage("Warrior deleted successfully.");
-    setShowPopup(true);
-    setIsError(false);
-  };*/
-
   const handleDeleteWarrior = async (warriorId) => {
     try {
-      await axios.delete(`http://127.0.0.1:5000/warrior/${warriorId}`);
+      await axios.delete(`${config.getWarriorUrl()}/${warriorId}`);
       navigate('/warriors');
       setPopupMessage("Warrior deleted successfully.");
       setShowPopup(true);

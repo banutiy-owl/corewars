@@ -5,6 +5,7 @@ import {
   validatePasswordRepeat,
 } from "./formValidations";
 import axios from 'axios';
+import config from "../../../config";
 
 export const handleSignUp = async (
   username,
@@ -31,7 +32,7 @@ export const handleSignUp = async (
   }
 
   try {
-    const response = await axios.post('http://127.0.0.1:5000/register', {
+    const response = await axios.post(config.getRegisterUrl(), {
       username,
       email,
       password,
@@ -59,7 +60,7 @@ export const handleSignIn = async (
   setPasswordError,
 ) => {
   try {
-    const response = await axios.post("http://127.0.0.1:5000/login", {
+    const response = await axios.post(config.getLogingUrl(), {
       login: username,
       password: password,
     });
